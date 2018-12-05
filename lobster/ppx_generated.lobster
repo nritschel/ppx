@@ -16,7 +16,11 @@ enum +
     MessageBody_ObserveResult = 8,
     MessageBody_Tag = 9,
     MessageBody_TagResult = 10,
-    MessageBody_Reset = 11
+    MessageBody_Forward = 11,
+    MessageBody_ForwardResult = 12,
+    MessageBody_Backward = 13,
+    MessageBody_BackwardResult = 14,
+    MessageBody_Reset = 15
 
 enum + 
     Distribution_NONE = 0,
@@ -48,6 +52,14 @@ struct ObserveResult
 struct Tag
 
 struct TagResult
+
+struct Forward
+
+struct ForwardResult
+
+struct Backward
+
+struct BackwardResult
 
 struct Reset
 
@@ -82,6 +94,14 @@ struct Message : flatbuffers_handle
         ppx_Tag { buf_, buf_.flatbuffers_field_table(pos_, 6) }
     def body_as_TagResult():
         ppx_TagResult { buf_, buf_.flatbuffers_field_table(pos_, 6) }
+    def body_as_Forward():
+        ppx_Forward { buf_, buf_.flatbuffers_field_table(pos_, 6) }
+    def body_as_ForwardResult():
+        ppx_ForwardResult { buf_, buf_.flatbuffers_field_table(pos_, 6) }
+    def body_as_Backward():
+        ppx_Backward { buf_, buf_.flatbuffers_field_table(pos_, 6) }
+    def body_as_BackwardResult():
+        ppx_BackwardResult { buf_, buf_.flatbuffers_field_table(pos_, 6) }
     def body_as_Reset():
         ppx_Reset { buf_, buf_.flatbuffers_field_table(pos_, 6) }
 
@@ -309,6 +329,98 @@ def GetRootAsTagResult(buf:string): TagResult { buf, buf.flatbuffers_indirect(0)
 def TagResultStart(b_:flatbuffers_builder):
     b_.StartObject(0)
 def TagResultEnd(b_:flatbuffers_builder):
+    b_.EndObject()
+
+struct Forward : flatbuffers_handle
+    def name():
+        buf_.flatbuffers_field_string(pos_, 4)
+    def arguments(i:int):
+        ppx_Tensor { buf_, buf_.flatbuffers_indirect(buf_.flatbuffers_field_vector(pos_, 6) + i * 4) }
+    def arguments_length():
+        buf_.flatbuffers_field_vector_len(pos_, 6)
+
+def GetRootAsForward(buf:string): Forward { buf, buf.flatbuffers_indirect(0) }
+
+def ForwardStart(b_:flatbuffers_builder):
+    b_.StartObject(2)
+def ForwardAddName(b_:flatbuffers_builder, name:int):
+    b_.PrependUOffsetTRelativeSlot(0, name, 0)
+def ForwardAddArguments(b_:flatbuffers_builder, arguments:int):
+    b_.PrependUOffsetTRelativeSlot(1, arguments, 0)
+def ForwardStartArgumentsVector(b_:flatbuffers_builder, n_:int):
+    b_.StartVector(4, n_, 4)
+def ForwardCreateArgumentsVector(b_:flatbuffers_builder, v_:[int]):
+    b_.StartVector(4, v_.length, 4)
+    reverse(v_) e_: b_.PrependUOffsetTRelative(e_)
+    b_.EndVector(v_.length)
+def ForwardEnd(b_:flatbuffers_builder):
+    b_.EndObject()
+
+struct ForwardResult : flatbuffers_handle
+    def values(i:int):
+        ppx_Tensor { buf_, buf_.flatbuffers_indirect(buf_.flatbuffers_field_vector(pos_, 4) + i * 4) }
+    def values_length():
+        buf_.flatbuffers_field_vector_len(pos_, 4)
+
+def GetRootAsForwardResult(buf:string): ForwardResult { buf, buf.flatbuffers_indirect(0) }
+
+def ForwardResultStart(b_:flatbuffers_builder):
+    b_.StartObject(1)
+def ForwardResultAddValues(b_:flatbuffers_builder, values:int):
+    b_.PrependUOffsetTRelativeSlot(0, values, 0)
+def ForwardResultStartValuesVector(b_:flatbuffers_builder, n_:int):
+    b_.StartVector(4, n_, 4)
+def ForwardResultCreateValuesVector(b_:flatbuffers_builder, v_:[int]):
+    b_.StartVector(4, v_.length, 4)
+    reverse(v_) e_: b_.PrependUOffsetTRelative(e_)
+    b_.EndVector(v_.length)
+def ForwardResultEnd(b_:flatbuffers_builder):
+    b_.EndObject()
+
+struct Backward : flatbuffers_handle
+    def name():
+        buf_.flatbuffers_field_string(pos_, 4)
+    def arguments(i:int):
+        ppx_Tensor { buf_, buf_.flatbuffers_indirect(buf_.flatbuffers_field_vector(pos_, 6) + i * 4) }
+    def arguments_length():
+        buf_.flatbuffers_field_vector_len(pos_, 6)
+
+def GetRootAsBackward(buf:string): Backward { buf, buf.flatbuffers_indirect(0) }
+
+def BackwardStart(b_:flatbuffers_builder):
+    b_.StartObject(2)
+def BackwardAddName(b_:flatbuffers_builder, name:int):
+    b_.PrependUOffsetTRelativeSlot(0, name, 0)
+def BackwardAddArguments(b_:flatbuffers_builder, arguments:int):
+    b_.PrependUOffsetTRelativeSlot(1, arguments, 0)
+def BackwardStartArgumentsVector(b_:flatbuffers_builder, n_:int):
+    b_.StartVector(4, n_, 4)
+def BackwardCreateArgumentsVector(b_:flatbuffers_builder, v_:[int]):
+    b_.StartVector(4, v_.length, 4)
+    reverse(v_) e_: b_.PrependUOffsetTRelative(e_)
+    b_.EndVector(v_.length)
+def BackwardEnd(b_:flatbuffers_builder):
+    b_.EndObject()
+
+struct BackwardResult : flatbuffers_handle
+    def values(i:int):
+        ppx_Tensor { buf_, buf_.flatbuffers_indirect(buf_.flatbuffers_field_vector(pos_, 4) + i * 4) }
+    def values_length():
+        buf_.flatbuffers_field_vector_len(pos_, 4)
+
+def GetRootAsBackwardResult(buf:string): BackwardResult { buf, buf.flatbuffers_indirect(0) }
+
+def BackwardResultStart(b_:flatbuffers_builder):
+    b_.StartObject(1)
+def BackwardResultAddValues(b_:flatbuffers_builder, values:int):
+    b_.PrependUOffsetTRelativeSlot(0, values, 0)
+def BackwardResultStartValuesVector(b_:flatbuffers_builder, n_:int):
+    b_.StartVector(4, n_, 4)
+def BackwardResultCreateValuesVector(b_:flatbuffers_builder, v_:[int]):
+    b_.StartVector(4, v_.length, 4)
+    reverse(v_) e_: b_.PrependUOffsetTRelative(e_)
+    b_.EndVector(v_.length)
+def BackwardResultEnd(b_:flatbuffers_builder):
     b_.EndObject()
 
 struct Reset : flatbuffers_handle

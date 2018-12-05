@@ -20,7 +20,7 @@ class MessageBodyTypeId {
   }
 
   static const int minValue = 0;
-  static const int maxValue = 11;
+  static const int maxValue = 15;
   static bool containsValue(int value) => values.containsKey(value);
 
   static const MessageBodyTypeId NONE = const MessageBodyTypeId._(0);
@@ -34,8 +34,12 @@ class MessageBodyTypeId {
   static const MessageBodyTypeId ObserveResult = const MessageBodyTypeId._(8);
   static const MessageBodyTypeId Tag = const MessageBodyTypeId._(9);
   static const MessageBodyTypeId TagResult = const MessageBodyTypeId._(10);
-  static const MessageBodyTypeId Reset = const MessageBodyTypeId._(11);
-  static get values => {0: NONE,1: Handshake,2: HandshakeResult,3: Run,4: RunResult,5: Sample,6: SampleResult,7: Observe,8: ObserveResult,9: Tag,10: TagResult,11: Reset,};
+  static const MessageBodyTypeId Forward = const MessageBodyTypeId._(11);
+  static const MessageBodyTypeId ForwardResult = const MessageBodyTypeId._(12);
+  static const MessageBodyTypeId Backward = const MessageBodyTypeId._(13);
+  static const MessageBodyTypeId BackwardResult = const MessageBodyTypeId._(14);
+  static const MessageBodyTypeId Reset = const MessageBodyTypeId._(15);
+  static get values => {0: NONE,1: Handshake,2: HandshakeResult,3: Run,4: RunResult,5: Sample,6: SampleResult,7: Observe,8: ObserveResult,9: Tag,10: TagResult,11: Forward,12: ForwardResult,13: Backward,14: BackwardResult,15: Reset,};
 
   static const fb.Reader<MessageBodyTypeId> reader = const _MessageBodyTypeIdReader();
 
@@ -123,7 +127,11 @@ class Message {
       case 8: return ObserveResult.reader.vTableGet(_bc, _bcOffset, 6, null);
       case 9: return Tag.reader.vTableGet(_bc, _bcOffset, 6, null);
       case 10: return TagResult.reader.vTableGet(_bc, _bcOffset, 6, null);
-      case 11: return Reset.reader.vTableGet(_bc, _bcOffset, 6, null);
+      case 11: return Forward.reader.vTableGet(_bc, _bcOffset, 6, null);
+      case 12: return ForwardResult.reader.vTableGet(_bc, _bcOffset, 6, null);
+      case 13: return Backward.reader.vTableGet(_bc, _bcOffset, 6, null);
+      case 14: return BackwardResult.reader.vTableGet(_bc, _bcOffset, 6, null);
+      case 15: return Reset.reader.vTableGet(_bc, _bcOffset, 6, null);
       default: return null;
     }
   }
@@ -1133,6 +1141,354 @@ class TagResultObjectBuilder extends fb.ObjectBuilder {
     assert(fbBuilder != null);
 
     fbBuilder.startTable();
+    return fbBuilder.endTable();
+  }
+
+  /// Convenience method to serialize to byte list.
+  @override
+  Uint8List toBytes([String fileIdentifier]) {
+    fb.Builder fbBuilder = new fb.Builder();
+    int offset = finish(fbBuilder);
+    return fbBuilder.finish(offset, fileIdentifier);
+  }
+}
+class Forward {
+  Forward._(this._bc, this._bcOffset);
+  factory Forward(List<int> bytes) {
+    fb.BufferContext rootRef = new fb.BufferContext.fromBytes(bytes);
+    return reader.read(rootRef, 0);
+  }
+
+  static const fb.Reader<Forward> reader = const _ForwardReader();
+
+  final fb.BufferContext _bc;
+  final int _bcOffset;
+
+  String get name => const fb.StringReader().vTableGet(_bc, _bcOffset, 4, null);
+  List<Tensor> get arguments => const fb.ListReader<Tensor>(Tensor.reader).vTableGet(_bc, _bcOffset, 6, null);
+
+  @override
+  String toString() {
+    return 'Forward{name: $name, arguments: $arguments}';
+  }
+}
+
+class _ForwardReader extends fb.TableReader<Forward> {
+  const _ForwardReader();
+
+  @override
+  Forward createObject(fb.BufferContext bc, int offset) => 
+    new Forward._(bc, offset);
+}
+
+class ForwardBuilder {
+  ForwardBuilder(this.fbBuilder) {
+    assert(fbBuilder != null);
+  }
+
+  final fb.Builder fbBuilder;
+
+  void begin() {
+    fbBuilder.startTable();
+  }
+
+  int addNameOffset(int offset) {
+    fbBuilder.addOffset(0, offset);
+    return fbBuilder.offset;
+  }
+  int addArgumentsOffset(int offset) {
+    fbBuilder.addOffset(1, offset);
+    return fbBuilder.offset;
+  }
+
+  int finish() {
+    return fbBuilder.endTable();
+  }
+}
+
+class ForwardObjectBuilder extends fb.ObjectBuilder {
+  final String _name;
+  final List<TensorObjectBuilder> _arguments;
+
+  ForwardObjectBuilder({
+    String name,
+    List<TensorObjectBuilder> arguments,
+  })
+      : _name = name,
+        _arguments = arguments;
+
+  /// Finish building, and store into the [fbBuilder].
+  @override
+  int finish(
+    fb.Builder fbBuilder) {
+    assert(fbBuilder != null);
+    final int nameOffset = fbBuilder.writeString(_name);
+    final int argumentsOffset = _arguments?.isNotEmpty == true
+        ? fbBuilder.writeList(_arguments.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
+        : null;
+
+    fbBuilder.startTable();
+    if (nameOffset != null) {
+      fbBuilder.addOffset(0, nameOffset);
+    }
+    if (argumentsOffset != null) {
+      fbBuilder.addOffset(1, argumentsOffset);
+    }
+    return fbBuilder.endTable();
+  }
+
+  /// Convenience method to serialize to byte list.
+  @override
+  Uint8List toBytes([String fileIdentifier]) {
+    fb.Builder fbBuilder = new fb.Builder();
+    int offset = finish(fbBuilder);
+    return fbBuilder.finish(offset, fileIdentifier);
+  }
+}
+class ForwardResult {
+  ForwardResult._(this._bc, this._bcOffset);
+  factory ForwardResult(List<int> bytes) {
+    fb.BufferContext rootRef = new fb.BufferContext.fromBytes(bytes);
+    return reader.read(rootRef, 0);
+  }
+
+  static const fb.Reader<ForwardResult> reader = const _ForwardResultReader();
+
+  final fb.BufferContext _bc;
+  final int _bcOffset;
+
+  List<Tensor> get values => const fb.ListReader<Tensor>(Tensor.reader).vTableGet(_bc, _bcOffset, 4, null);
+
+  @override
+  String toString() {
+    return 'ForwardResult{values: $values}';
+  }
+}
+
+class _ForwardResultReader extends fb.TableReader<ForwardResult> {
+  const _ForwardResultReader();
+
+  @override
+  ForwardResult createObject(fb.BufferContext bc, int offset) => 
+    new ForwardResult._(bc, offset);
+}
+
+class ForwardResultBuilder {
+  ForwardResultBuilder(this.fbBuilder) {
+    assert(fbBuilder != null);
+  }
+
+  final fb.Builder fbBuilder;
+
+  void begin() {
+    fbBuilder.startTable();
+  }
+
+  int addValuesOffset(int offset) {
+    fbBuilder.addOffset(0, offset);
+    return fbBuilder.offset;
+  }
+
+  int finish() {
+    return fbBuilder.endTable();
+  }
+}
+
+class ForwardResultObjectBuilder extends fb.ObjectBuilder {
+  final List<TensorObjectBuilder> _values;
+
+  ForwardResultObjectBuilder({
+    List<TensorObjectBuilder> values,
+  })
+      : _values = values;
+
+  /// Finish building, and store into the [fbBuilder].
+  @override
+  int finish(
+    fb.Builder fbBuilder) {
+    assert(fbBuilder != null);
+    final int valuesOffset = _values?.isNotEmpty == true
+        ? fbBuilder.writeList(_values.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
+        : null;
+
+    fbBuilder.startTable();
+    if (valuesOffset != null) {
+      fbBuilder.addOffset(0, valuesOffset);
+    }
+    return fbBuilder.endTable();
+  }
+
+  /// Convenience method to serialize to byte list.
+  @override
+  Uint8List toBytes([String fileIdentifier]) {
+    fb.Builder fbBuilder = new fb.Builder();
+    int offset = finish(fbBuilder);
+    return fbBuilder.finish(offset, fileIdentifier);
+  }
+}
+class Backward {
+  Backward._(this._bc, this._bcOffset);
+  factory Backward(List<int> bytes) {
+    fb.BufferContext rootRef = new fb.BufferContext.fromBytes(bytes);
+    return reader.read(rootRef, 0);
+  }
+
+  static const fb.Reader<Backward> reader = const _BackwardReader();
+
+  final fb.BufferContext _bc;
+  final int _bcOffset;
+
+  String get name => const fb.StringReader().vTableGet(_bc, _bcOffset, 4, null);
+  List<Tensor> get arguments => const fb.ListReader<Tensor>(Tensor.reader).vTableGet(_bc, _bcOffset, 6, null);
+
+  @override
+  String toString() {
+    return 'Backward{name: $name, arguments: $arguments}';
+  }
+}
+
+class _BackwardReader extends fb.TableReader<Backward> {
+  const _BackwardReader();
+
+  @override
+  Backward createObject(fb.BufferContext bc, int offset) => 
+    new Backward._(bc, offset);
+}
+
+class BackwardBuilder {
+  BackwardBuilder(this.fbBuilder) {
+    assert(fbBuilder != null);
+  }
+
+  final fb.Builder fbBuilder;
+
+  void begin() {
+    fbBuilder.startTable();
+  }
+
+  int addNameOffset(int offset) {
+    fbBuilder.addOffset(0, offset);
+    return fbBuilder.offset;
+  }
+  int addArgumentsOffset(int offset) {
+    fbBuilder.addOffset(1, offset);
+    return fbBuilder.offset;
+  }
+
+  int finish() {
+    return fbBuilder.endTable();
+  }
+}
+
+class BackwardObjectBuilder extends fb.ObjectBuilder {
+  final String _name;
+  final List<TensorObjectBuilder> _arguments;
+
+  BackwardObjectBuilder({
+    String name,
+    List<TensorObjectBuilder> arguments,
+  })
+      : _name = name,
+        _arguments = arguments;
+
+  /// Finish building, and store into the [fbBuilder].
+  @override
+  int finish(
+    fb.Builder fbBuilder) {
+    assert(fbBuilder != null);
+    final int nameOffset = fbBuilder.writeString(_name);
+    final int argumentsOffset = _arguments?.isNotEmpty == true
+        ? fbBuilder.writeList(_arguments.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
+        : null;
+
+    fbBuilder.startTable();
+    if (nameOffset != null) {
+      fbBuilder.addOffset(0, nameOffset);
+    }
+    if (argumentsOffset != null) {
+      fbBuilder.addOffset(1, argumentsOffset);
+    }
+    return fbBuilder.endTable();
+  }
+
+  /// Convenience method to serialize to byte list.
+  @override
+  Uint8List toBytes([String fileIdentifier]) {
+    fb.Builder fbBuilder = new fb.Builder();
+    int offset = finish(fbBuilder);
+    return fbBuilder.finish(offset, fileIdentifier);
+  }
+}
+class BackwardResult {
+  BackwardResult._(this._bc, this._bcOffset);
+  factory BackwardResult(List<int> bytes) {
+    fb.BufferContext rootRef = new fb.BufferContext.fromBytes(bytes);
+    return reader.read(rootRef, 0);
+  }
+
+  static const fb.Reader<BackwardResult> reader = const _BackwardResultReader();
+
+  final fb.BufferContext _bc;
+  final int _bcOffset;
+
+  List<Tensor> get values => const fb.ListReader<Tensor>(Tensor.reader).vTableGet(_bc, _bcOffset, 4, null);
+
+  @override
+  String toString() {
+    return 'BackwardResult{values: $values}';
+  }
+}
+
+class _BackwardResultReader extends fb.TableReader<BackwardResult> {
+  const _BackwardResultReader();
+
+  @override
+  BackwardResult createObject(fb.BufferContext bc, int offset) => 
+    new BackwardResult._(bc, offset);
+}
+
+class BackwardResultBuilder {
+  BackwardResultBuilder(this.fbBuilder) {
+    assert(fbBuilder != null);
+  }
+
+  final fb.Builder fbBuilder;
+
+  void begin() {
+    fbBuilder.startTable();
+  }
+
+  int addValuesOffset(int offset) {
+    fbBuilder.addOffset(0, offset);
+    return fbBuilder.offset;
+  }
+
+  int finish() {
+    return fbBuilder.endTable();
+  }
+}
+
+class BackwardResultObjectBuilder extends fb.ObjectBuilder {
+  final List<TensorObjectBuilder> _values;
+
+  BackwardResultObjectBuilder({
+    List<TensorObjectBuilder> values,
+  })
+      : _values = values;
+
+  /// Finish building, and store into the [fbBuilder].
+  @override
+  int finish(
+    fb.Builder fbBuilder) {
+    assert(fbBuilder != null);
+    final int valuesOffset = _values?.isNotEmpty == true
+        ? fbBuilder.writeList(_values.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
+        : null;
+
+    fbBuilder.startTable();
+    if (valuesOffset != null) {
+      fbBuilder.addOffset(0, valuesOffset);
+    }
     return fbBuilder.endTable();
   }
 

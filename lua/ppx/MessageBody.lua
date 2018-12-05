@@ -14,7 +14,11 @@ local MessageBody = {
     ObserveResult = 8,
     Tag = 9,
     TagResult = 10,
-    Reset = 11,
+    Forward = 11,
+    ForwardResult = 12,
+    Backward = 13,
+    BackwardResult = 14,
+    Reset = 15,
 }
 
 return MessageBody -- return the module

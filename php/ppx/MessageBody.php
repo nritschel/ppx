@@ -16,7 +16,11 @@ class MessageBody
     const ObserveResult = 8;
     const Tag = 9;
     const TagResult = 10;
-    const Reset = 11;
+    const Forward = 11;
+    const ForwardResult = 12;
+    const Backward = 13;
+    const BackwardResult = 14;
+    const Reset = 15;
 
     private static $names = array(
         "NONE",
@@ -30,6 +34,10 @@ class MessageBody
         "ObserveResult",
         "Tag",
         "TagResult",
+        "Forward",
+        "ForwardResult",
+        "Backward",
+        "BackwardResult",
         "Reset",
     );
 

@@ -17,6 +17,10 @@ union MessageBody {
   ObserveResult,
   Tag,
   TagResult,
+  Forward,
+  ForwardResult,
+  Backward,
+  BackwardResult,
   Reset
 }
 
@@ -79,6 +83,24 @@ table Tag {
 }
 
 table TagResult {}
+
+table Forward {
+  name: string;
+  arguments: [Tensor];
+}
+
+table ForwardResult {
+  values: [Tensor];
+}
+
+table Backward {
+  name: string;
+  arguments: [Tensor];
+}
+
+table BackwardResult {
+  values: [Tensor];
+}
 
 table Reset {}
 

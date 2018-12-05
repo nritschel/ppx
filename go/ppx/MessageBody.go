@@ -15,7 +15,11 @@ const (
 	MessageBodyObserveResult MessageBody = 8
 	MessageBodyTag MessageBody = 9
 	MessageBodyTagResult MessageBody = 10
-	MessageBodyReset MessageBody = 11
+	MessageBodyForward MessageBody = 11
+	MessageBodyForwardResult MessageBody = 12
+	MessageBodyBackward MessageBody = 13
+	MessageBodyBackwardResult MessageBody = 14
+	MessageBodyReset MessageBody = 15
 )
 
 var EnumNamesMessageBody = map[MessageBody]string{
@@ -30,6 +34,10 @@ var EnumNamesMessageBody = map[MessageBody]string{
 	MessageBodyObserveResult:"ObserveResult",
 	MessageBodyTag:"Tag",
 	MessageBodyTagResult:"TagResult",
+	MessageBodyForward:"Forward",
+	MessageBodyForwardResult:"ForwardResult",
+	MessageBodyBackward:"Backward",
+	MessageBodyBackwardResult:"BackwardResult",
 	MessageBodyReset:"Reset",
 }
 

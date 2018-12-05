@@ -32,6 +32,14 @@ struct Tag;
 
 struct TagResult;
 
+struct Forward;
+
+struct ForwardResult;
+
+struct Backward;
+
+struct BackwardResult;
+
 struct Reset;
 
 struct Normal;
@@ -54,12 +62,16 @@ enum MessageBody {
   MessageBody_ObserveResult = 8,
   MessageBody_Tag = 9,
   MessageBody_TagResult = 10,
-  MessageBody_Reset = 11,
+  MessageBody_Forward = 11,
+  MessageBody_ForwardResult = 12,
+  MessageBody_Backward = 13,
+  MessageBody_BackwardResult = 14,
+  MessageBody_Reset = 15,
   MessageBody_MIN = MessageBody_NONE,
   MessageBody_MAX = MessageBody_Reset
 };
 
-inline const MessageBody (&EnumValuesMessageBody())[12] {
+inline const MessageBody (&EnumValuesMessageBody())[16] {
   static const MessageBody values[] = {
     MessageBody_NONE,
     MessageBody_Handshake,
@@ -72,6 +84,10 @@ inline const MessageBody (&EnumValuesMessageBody())[12] {
     MessageBody_ObserveResult,
     MessageBody_Tag,
     MessageBody_TagResult,
+    MessageBody_Forward,
+    MessageBody_ForwardResult,
+    MessageBody_Backward,
+    MessageBody_BackwardResult,
     MessageBody_Reset
   };
   return values;
@@ -90,6 +106,10 @@ inline const char * const *EnumNamesMessageBody() {
     "ObserveResult",
     "Tag",
     "TagResult",
+    "Forward",
+    "ForwardResult",
+    "Backward",
+    "BackwardResult",
     "Reset",
     nullptr
   };
@@ -97,6 +117,7 @@ inline const char * const *EnumNamesMessageBody() {
 }
 
 inline const char *EnumNameMessageBody(MessageBody e) {
+  if (e < MessageBody_NONE || e > MessageBody_Reset) return "";
   const size_t index = static_cast<int>(e);
   return EnumNamesMessageBody()[index];
 }
@@ -145,6 +166,22 @@ template<> struct MessageBodyTraits<TagResult> {
   static const MessageBody enum_value = MessageBody_TagResult;
 };
 
+template<> struct MessageBodyTraits<Forward> {
+  static const MessageBody enum_value = MessageBody_Forward;
+};
+
+template<> struct MessageBodyTraits<ForwardResult> {
+  static const MessageBody enum_value = MessageBody_ForwardResult;
+};
+
+template<> struct MessageBodyTraits<Backward> {
+  static const MessageBody enum_value = MessageBody_Backward;
+};
+
+template<> struct MessageBodyTraits<BackwardResult> {
+  static const MessageBody enum_value = MessageBody_BackwardResult;
+};
+
 template<> struct MessageBodyTraits<Reset> {
   static const MessageBody enum_value = MessageBody_Reset;
 };
@@ -186,6 +223,7 @@ inline const char * const *EnumNamesDistribution() {
 }
 
 inline const char *EnumNameDistribution(Distribution e) {
+  if (e < Distribution_NONE || e > Distribution_Poisson) return "";
   const size_t index = static_cast<int>(e);
   return EnumNamesDistribution()[index];
 }
@@ -214,7 +252,7 @@ bool VerifyDistribution(flatbuffers::Verifier &verifier, const void *obj, Distri
 bool VerifyDistributionVector(flatbuffers::Verifier &verifier, const flatbuffers::Vector<flatbuffers::Offset<void>> *values, const flatbuffers::Vector<uint8_t> *types);
 
 struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_BODY_TYPE = 4,
     VT_BODY = 6
   };
@@ -254,6 +292,18 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   const TagResult *body_as_TagResult() const {
     return body_type() == MessageBody_TagResult ? static_cast<const TagResult *>(body()) : nullptr;
+  }
+  const Forward *body_as_Forward() const {
+    return body_type() == MessageBody_Forward ? static_cast<const Forward *>(body()) : nullptr;
+  }
+  const ForwardResult *body_as_ForwardResult() const {
+    return body_type() == MessageBody_ForwardResult ? static_cast<const ForwardResult *>(body()) : nullptr;
+  }
+  const Backward *body_as_Backward() const {
+    return body_type() == MessageBody_Backward ? static_cast<const Backward *>(body()) : nullptr;
+  }
+  const BackwardResult *body_as_BackwardResult() const {
+    return body_type() == MessageBody_BackwardResult ? static_cast<const BackwardResult *>(body()) : nullptr;
   }
   const Reset *body_as_Reset() const {
     return body_type() == MessageBody_Reset ? static_cast<const Reset *>(body()) : nullptr;
@@ -307,6 +357,22 @@ template<> inline const TagResult *Message::body_as<TagResult>() const {
   return body_as_TagResult();
 }
 
+template<> inline const Forward *Message::body_as<Forward>() const {
+  return body_as_Forward();
+}
+
+template<> inline const ForwardResult *Message::body_as<ForwardResult>() const {
+  return body_as_ForwardResult();
+}
+
+template<> inline const Backward *Message::body_as<Backward>() const {
+  return body_as_Backward();
+}
+
+template<> inline const BackwardResult *Message::body_as<BackwardResult>() const {
+  return body_as_BackwardResult();
+}
+
 template<> inline const Reset *Message::body_as<Reset>() const {
   return body_as_Reset();
 }
@@ -343,7 +409,7 @@ inline flatbuffers::Offset<Message> CreateMessage(
 }
 
 struct Tensor FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_DATA = 4,
     VT_SHAPE = 6
   };
@@ -398,14 +464,16 @@ inline flatbuffers::Offset<Tensor> CreateTensorDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const std::vector<double> *data = nullptr,
     const std::vector<int32_t> *shape = nullptr) {
+  auto data__ = data ? _fbb.CreateVector<double>(*data) : 0;
+  auto shape__ = shape ? _fbb.CreateVector<int32_t>(*shape) : 0;
   return ppx::CreateTensor(
       _fbb,
-      data ? _fbb.CreateVector<double>(*data) : 0,
-      shape ? _fbb.CreateVector<int32_t>(*shape) : 0);
+      data__,
+      shape__);
 }
 
 struct Handshake FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SYSTEM_NAME = 4
   };
   const flatbuffers::String *system_name() const {
@@ -448,13 +516,14 @@ inline flatbuffers::Offset<Handshake> CreateHandshake(
 inline flatbuffers::Offset<Handshake> CreateHandshakeDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *system_name = nullptr) {
+  auto system_name__ = system_name ? _fbb.CreateString(system_name) : 0;
   return ppx::CreateHandshake(
       _fbb,
-      system_name ? _fbb.CreateString(system_name) : 0);
+      system_name__);
 }
 
 struct HandshakeResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_SYSTEM_NAME = 4,
     VT_MODEL_NAME = 6
   };
@@ -509,10 +578,12 @@ inline flatbuffers::Offset<HandshakeResult> CreateHandshakeResultDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *system_name = nullptr,
     const char *model_name = nullptr) {
+  auto system_name__ = system_name ? _fbb.CreateString(system_name) : 0;
+  auto model_name__ = model_name ? _fbb.CreateString(model_name) : 0;
   return ppx::CreateHandshakeResult(
       _fbb,
-      system_name ? _fbb.CreateString(system_name) : 0,
-      model_name ? _fbb.CreateString(model_name) : 0);
+      system_name__,
+      model_name__);
 }
 
 struct Run FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -544,7 +615,7 @@ inline flatbuffers::Offset<Run> CreateRun(
 }
 
 struct RunResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_RESULT = 4
   };
   const Tensor *result() const {
@@ -585,7 +656,7 @@ inline flatbuffers::Offset<RunResult> CreateRunResult(
 }
 
 struct Sample FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ADDRESS = 4,
     VT_NAME = 6,
     VT_DISTRIBUTION_TYPE = 8,
@@ -714,10 +785,12 @@ inline flatbuffers::Offset<Sample> CreateSampleDirect(
     flatbuffers::Offset<void> distribution = 0,
     bool control = true,
     bool replace = false) {
+  auto address__ = address ? _fbb.CreateString(address) : 0;
+  auto name__ = name ? _fbb.CreateString(name) : 0;
   return ppx::CreateSample(
       _fbb,
-      address ? _fbb.CreateString(address) : 0,
-      name ? _fbb.CreateString(name) : 0,
+      address__,
+      name__,
       distribution_type,
       distribution,
       control,
@@ -725,7 +798,7 @@ inline flatbuffers::Offset<Sample> CreateSampleDirect(
 }
 
 struct SampleResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_RESULT = 4
   };
   const Tensor *result() const {
@@ -766,7 +839,7 @@ inline flatbuffers::Offset<SampleResult> CreateSampleResult(
 }
 
 struct Observe FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ADDRESS = 4,
     VT_NAME = 6,
     VT_DISTRIBUTION_TYPE = 8,
@@ -885,10 +958,12 @@ inline flatbuffers::Offset<Observe> CreateObserveDirect(
     Distribution distribution_type = Distribution_NONE,
     flatbuffers::Offset<void> distribution = 0,
     flatbuffers::Offset<Tensor> value = 0) {
+  auto address__ = address ? _fbb.CreateString(address) : 0;
+  auto name__ = name ? _fbb.CreateString(name) : 0;
   return ppx::CreateObserve(
       _fbb,
-      address ? _fbb.CreateString(address) : 0,
-      name ? _fbb.CreateString(name) : 0,
+      address__,
+      name__,
       distribution_type,
       distribution,
       value);
@@ -923,7 +998,7 @@ inline flatbuffers::Offset<ObserveResult> CreateObserveResult(
 }
 
 struct Tag FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_ADDRESS = 4,
     VT_NAME = 6,
     VT_VALUE = 8
@@ -990,10 +1065,12 @@ inline flatbuffers::Offset<Tag> CreateTagDirect(
     const char *address = nullptr,
     const char *name = nullptr,
     flatbuffers::Offset<Tensor> value = 0) {
+  auto address__ = address ? _fbb.CreateString(address) : 0;
+  auto name__ = name ? _fbb.CreateString(name) : 0;
   return ppx::CreateTag(
       _fbb,
-      address ? _fbb.CreateString(address) : 0,
-      name ? _fbb.CreateString(name) : 0,
+      address__,
+      name__,
       value);
 }
 
@@ -1025,6 +1102,238 @@ inline flatbuffers::Offset<TagResult> CreateTagResult(
   return builder_.Finish();
 }
 
+struct Forward FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NAME = 4,
+    VT_ARGUMENTS = 6
+  };
+  const flatbuffers::String *name() const {
+    return GetPointer<const flatbuffers::String *>(VT_NAME);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *arguments() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *>(VT_ARGUMENTS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_NAME) &&
+           verifier.VerifyString(name()) &&
+           VerifyOffset(verifier, VT_ARGUMENTS) &&
+           verifier.VerifyVector(arguments()) &&
+           verifier.VerifyVectorOfTables(arguments()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ForwardBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_name(flatbuffers::Offset<flatbuffers::String> name) {
+    fbb_.AddOffset(Forward::VT_NAME, name);
+  }
+  void add_arguments(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> arguments) {
+    fbb_.AddOffset(Forward::VT_ARGUMENTS, arguments);
+  }
+  explicit ForwardBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ForwardBuilder &operator=(const ForwardBuilder &);
+  flatbuffers::Offset<Forward> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<Forward>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Forward> CreateForward(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> name = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> arguments = 0) {
+  ForwardBuilder builder_(_fbb);
+  builder_.add_arguments(arguments);
+  builder_.add_name(name);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Forward> CreateForwardDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *name = nullptr,
+    const std::vector<flatbuffers::Offset<Tensor>> *arguments = nullptr) {
+  auto name__ = name ? _fbb.CreateString(name) : 0;
+  auto arguments__ = arguments ? _fbb.CreateVector<flatbuffers::Offset<Tensor>>(*arguments) : 0;
+  return ppx::CreateForward(
+      _fbb,
+      name__,
+      arguments__);
+}
+
+struct ForwardResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_VALUES = 4
+  };
+  const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *values() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *>(VT_VALUES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_VALUES) &&
+           verifier.VerifyVector(values()) &&
+           verifier.VerifyVectorOfTables(values()) &&
+           verifier.EndTable();
+  }
+};
+
+struct ForwardResultBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_values(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> values) {
+    fbb_.AddOffset(ForwardResult::VT_VALUES, values);
+  }
+  explicit ForwardResultBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ForwardResultBuilder &operator=(const ForwardResultBuilder &);
+  flatbuffers::Offset<ForwardResult> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<ForwardResult>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<ForwardResult> CreateForwardResult(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> values = 0) {
+  ForwardResultBuilder builder_(_fbb);
+  builder_.add_values(values);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<ForwardResult> CreateForwardResultDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<Tensor>> *values = nullptr) {
+  auto values__ = values ? _fbb.CreateVector<flatbuffers::Offset<Tensor>>(*values) : 0;
+  return ppx::CreateForwardResult(
+      _fbb,
+      values__);
+}
+
+struct Backward FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NAME = 4,
+    VT_ARGUMENTS = 6
+  };
+  const flatbuffers::String *name() const {
+    return GetPointer<const flatbuffers::String *>(VT_NAME);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *arguments() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *>(VT_ARGUMENTS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_NAME) &&
+           verifier.VerifyString(name()) &&
+           VerifyOffset(verifier, VT_ARGUMENTS) &&
+           verifier.VerifyVector(arguments()) &&
+           verifier.VerifyVectorOfTables(arguments()) &&
+           verifier.EndTable();
+  }
+};
+
+struct BackwardBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_name(flatbuffers::Offset<flatbuffers::String> name) {
+    fbb_.AddOffset(Backward::VT_NAME, name);
+  }
+  void add_arguments(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> arguments) {
+    fbb_.AddOffset(Backward::VT_ARGUMENTS, arguments);
+  }
+  explicit BackwardBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  BackwardBuilder &operator=(const BackwardBuilder &);
+  flatbuffers::Offset<Backward> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<Backward>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Backward> CreateBackward(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> name = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> arguments = 0) {
+  BackwardBuilder builder_(_fbb);
+  builder_.add_arguments(arguments);
+  builder_.add_name(name);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Backward> CreateBackwardDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *name = nullptr,
+    const std::vector<flatbuffers::Offset<Tensor>> *arguments = nullptr) {
+  auto name__ = name ? _fbb.CreateString(name) : 0;
+  auto arguments__ = arguments ? _fbb.CreateVector<flatbuffers::Offset<Tensor>>(*arguments) : 0;
+  return ppx::CreateBackward(
+      _fbb,
+      name__,
+      arguments__);
+}
+
+struct BackwardResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_VALUES = 4
+  };
+  const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *values() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *>(VT_VALUES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_VALUES) &&
+           verifier.VerifyVector(values()) &&
+           verifier.VerifyVectorOfTables(values()) &&
+           verifier.EndTable();
+  }
+};
+
+struct BackwardResultBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_values(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> values) {
+    fbb_.AddOffset(BackwardResult::VT_VALUES, values);
+  }
+  explicit BackwardResultBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  BackwardResultBuilder &operator=(const BackwardResultBuilder &);
+  flatbuffers::Offset<BackwardResult> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<BackwardResult>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<BackwardResult> CreateBackwardResult(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> values = 0) {
+  BackwardResultBuilder builder_(_fbb);
+  builder_.add_values(values);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<BackwardResult> CreateBackwardResultDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<Tensor>> *values = nullptr) {
+  auto values__ = values ? _fbb.CreateVector<flatbuffers::Offset<Tensor>>(*values) : 0;
+  return ppx::CreateBackwardResult(
+      _fbb,
+      values__);
+}
+
 struct Reset FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1054,7 +1363,7 @@ inline flatbuffers::Offset<Reset> CreateReset(
 }
 
 struct Normal FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_MEAN = 4,
     VT_STDDEV = 6
   };
@@ -1106,7 +1415,7 @@ inline flatbuffers::Offset<Normal> CreateNormal(
 }
 
 struct Uniform FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_LOW = 4,
     VT_HIGH = 6
   };
@@ -1158,7 +1467,7 @@ inline flatbuffers::Offset<Uniform> CreateUniform(
 }
 
 struct Categorical FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_PROBS = 4
   };
   const Tensor *probs() const {
@@ -1199,7 +1508,7 @@ inline flatbuffers::Offset<Categorical> CreateCategorical(
 }
 
 struct Poisson FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
-  enum {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_RATE = 4
   };
   const Tensor *rate() const {
@@ -1282,6 +1591,22 @@ inline bool VerifyMessageBody(flatbuffers::Verifier &verifier, const void *obj, 
     }
     case MessageBody_TagResult: {
       auto ptr = reinterpret_cast<const TagResult *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case MessageBody_Forward: {
+      auto ptr = reinterpret_cast<const Forward *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case MessageBody_ForwardResult: {
+      auto ptr = reinterpret_cast<const ForwardResult *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case MessageBody_Backward: {
+      auto ptr = reinterpret_cast<const Backward *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case MessageBody_BackwardResult: {
+      auto ptr = reinterpret_cast<const BackwardResult *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case MessageBody_Reset: {
