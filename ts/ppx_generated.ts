@@ -1193,21 +1193,12 @@ name(optionalEncoding?:any):string|Uint8Array|null {
 };
 
 /**
- * @param number index
  * @param ppx.Tensor= obj
- * @returns ppx.Tensor
+ * @returns ppx.Tensor|null
  */
-arguments(index: number, obj?:ppx.Tensor):ppx.Tensor|null {
+input(obj?:ppx.Tensor):ppx.Tensor|null {
   var offset = this.bb!.__offset(this.bb_pos, 6);
-  return offset ? (obj || new ppx.Tensor).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
-};
-
-/**
- * @returns number
- */
-argumentsLength():number {
-  var offset = this.bb!.__offset(this.bb_pos, 6);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new ppx.Tensor).__init(this.bb!.__indirect(this.bb_pos + offset), this.bb!) : null;
 };
 
 /**
@@ -1227,31 +1218,10 @@ static addName(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset) {
 
 /**
  * @param flatbuffers.Builder builder
- * @param flatbuffers.Offset argumentsOffset
+ * @param flatbuffers.Offset inputOffset
  */
-static addArguments(builder:flatbuffers.Builder, argumentsOffset:flatbuffers.Offset) {
-  builder.addFieldOffset(1, argumentsOffset, 0);
-};
-
-/**
- * @param flatbuffers.Builder builder
- * @param Array.<flatbuffers.Offset> data
- * @returns flatbuffers.Offset
- */
-static createArgumentsVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[]):flatbuffers.Offset {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param flatbuffers.Builder builder
- * @param number numElems
- */
-static startArgumentsVector(builder:flatbuffers.Builder, numElems:number) {
-  builder.startVector(4, numElems, 4);
+static addInput(builder:flatbuffers.Builder, inputOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(1, inputOffset, 0);
 };
 
 /**
@@ -1263,10 +1233,10 @@ static endForward(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 };
 
-static createForward(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, argumentsOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createForward(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, inputOffset:flatbuffers.Offset):flatbuffers.Offset {
   Forward.startForward(builder);
   Forward.addName(builder, nameOffset);
-  Forward.addArguments(builder, argumentsOffset);
+  Forward.addInput(builder, inputOffset);
   return Forward.endForward(builder);
 }
 }
@@ -1300,21 +1270,12 @@ static getRootAsForwardResult(bb:flatbuffers.ByteBuffer, obj?:ForwardResult):For
 };
 
 /**
- * @param number index
  * @param ppx.Tensor= obj
- * @returns ppx.Tensor
+ * @returns ppx.Tensor|null
  */
-values(index: number, obj?:ppx.Tensor):ppx.Tensor|null {
+output(obj?:ppx.Tensor):ppx.Tensor|null {
   var offset = this.bb!.__offset(this.bb_pos, 4);
-  return offset ? (obj || new ppx.Tensor).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
-};
-
-/**
- * @returns number
- */
-valuesLength():number {
-  var offset = this.bb!.__offset(this.bb_pos, 4);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new ppx.Tensor).__init(this.bb!.__indirect(this.bb_pos + offset), this.bb!) : null;
 };
 
 /**
@@ -1326,31 +1287,10 @@ static startForwardResult(builder:flatbuffers.Builder) {
 
 /**
  * @param flatbuffers.Builder builder
- * @param flatbuffers.Offset valuesOffset
+ * @param flatbuffers.Offset outputOffset
  */
-static addValues(builder:flatbuffers.Builder, valuesOffset:flatbuffers.Offset) {
-  builder.addFieldOffset(0, valuesOffset, 0);
-};
-
-/**
- * @param flatbuffers.Builder builder
- * @param Array.<flatbuffers.Offset> data
- * @returns flatbuffers.Offset
- */
-static createValuesVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[]):flatbuffers.Offset {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param flatbuffers.Builder builder
- * @param number numElems
- */
-static startValuesVector(builder:flatbuffers.Builder, numElems:number) {
-  builder.startVector(4, numElems, 4);
+static addOutput(builder:flatbuffers.Builder, outputOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(0, outputOffset, 0);
 };
 
 /**
@@ -1362,9 +1302,9 @@ static endForwardResult(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 };
 
-static createForwardResult(builder:flatbuffers.Builder, valuesOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createForwardResult(builder:flatbuffers.Builder, outputOffset:flatbuffers.Offset):flatbuffers.Offset {
   ForwardResult.startForwardResult(builder);
-  ForwardResult.addValues(builder, valuesOffset);
+  ForwardResult.addOutput(builder, outputOffset);
   return ForwardResult.endForwardResult(builder);
 }
 }
@@ -1409,28 +1349,28 @@ name(optionalEncoding?:any):string|Uint8Array|null {
 };
 
 /**
- * @param number index
  * @param ppx.Tensor= obj
- * @returns ppx.Tensor
+ * @returns ppx.Tensor|null
  */
-arguments(index: number, obj?:ppx.Tensor):ppx.Tensor|null {
+input(obj?:ppx.Tensor):ppx.Tensor|null {
   var offset = this.bb!.__offset(this.bb_pos, 6);
-  return offset ? (obj || new ppx.Tensor).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
+  return offset ? (obj || new ppx.Tensor).__init(this.bb!.__indirect(this.bb_pos + offset), this.bb!) : null;
 };
 
 /**
- * @returns number
+ * @param ppx.Tensor= obj
+ * @returns ppx.Tensor|null
  */
-argumentsLength():number {
-  var offset = this.bb!.__offset(this.bb_pos, 6);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+gradOutput(obj?:ppx.Tensor):ppx.Tensor|null {
+  var offset = this.bb!.__offset(this.bb_pos, 8);
+  return offset ? (obj || new ppx.Tensor).__init(this.bb!.__indirect(this.bb_pos + offset), this.bb!) : null;
 };
 
 /**
  * @param flatbuffers.Builder builder
  */
 static startBackward(builder:flatbuffers.Builder) {
-  builder.startObject(2);
+  builder.startObject(3);
 };
 
 /**
@@ -1443,31 +1383,18 @@ static addName(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset) {
 
 /**
  * @param flatbuffers.Builder builder
- * @param flatbuffers.Offset argumentsOffset
+ * @param flatbuffers.Offset inputOffset
  */
-static addArguments(builder:flatbuffers.Builder, argumentsOffset:flatbuffers.Offset) {
-  builder.addFieldOffset(1, argumentsOffset, 0);
+static addInput(builder:flatbuffers.Builder, inputOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(1, inputOffset, 0);
 };
 
 /**
  * @param flatbuffers.Builder builder
- * @param Array.<flatbuffers.Offset> data
- * @returns flatbuffers.Offset
+ * @param flatbuffers.Offset gradOutputOffset
  */
-static createArgumentsVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[]):flatbuffers.Offset {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param flatbuffers.Builder builder
- * @param number numElems
- */
-static startArgumentsVector(builder:flatbuffers.Builder, numElems:number) {
-  builder.startVector(4, numElems, 4);
+static addGradOutput(builder:flatbuffers.Builder, gradOutputOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(2, gradOutputOffset, 0);
 };
 
 /**
@@ -1479,10 +1406,11 @@ static endBackward(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 };
 
-static createBackward(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, argumentsOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createBackward(builder:flatbuffers.Builder, nameOffset:flatbuffers.Offset, inputOffset:flatbuffers.Offset, gradOutputOffset:flatbuffers.Offset):flatbuffers.Offset {
   Backward.startBackward(builder);
   Backward.addName(builder, nameOffset);
-  Backward.addArguments(builder, argumentsOffset);
+  Backward.addInput(builder, inputOffset);
+  Backward.addGradOutput(builder, gradOutputOffset);
   return Backward.endBackward(builder);
 }
 }
@@ -1516,21 +1444,12 @@ static getRootAsBackwardResult(bb:flatbuffers.ByteBuffer, obj?:BackwardResult):B
 };
 
 /**
- * @param number index
  * @param ppx.Tensor= obj
- * @returns ppx.Tensor
+ * @returns ppx.Tensor|null
  */
-values(index: number, obj?:ppx.Tensor):ppx.Tensor|null {
+gradInput(obj?:ppx.Tensor):ppx.Tensor|null {
   var offset = this.bb!.__offset(this.bb_pos, 4);
-  return offset ? (obj || new ppx.Tensor).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
-};
-
-/**
- * @returns number
- */
-valuesLength():number {
-  var offset = this.bb!.__offset(this.bb_pos, 4);
-  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new ppx.Tensor).__init(this.bb!.__indirect(this.bb_pos + offset), this.bb!) : null;
 };
 
 /**
@@ -1542,31 +1461,10 @@ static startBackwardResult(builder:flatbuffers.Builder) {
 
 /**
  * @param flatbuffers.Builder builder
- * @param flatbuffers.Offset valuesOffset
+ * @param flatbuffers.Offset gradInputOffset
  */
-static addValues(builder:flatbuffers.Builder, valuesOffset:flatbuffers.Offset) {
-  builder.addFieldOffset(0, valuesOffset, 0);
-};
-
-/**
- * @param flatbuffers.Builder builder
- * @param Array.<flatbuffers.Offset> data
- * @returns flatbuffers.Offset
- */
-static createValuesVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[]):flatbuffers.Offset {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param flatbuffers.Builder builder
- * @param number numElems
- */
-static startValuesVector(builder:flatbuffers.Builder, numElems:number) {
-  builder.startVector(4, numElems, 4);
+static addGradInput(builder:flatbuffers.Builder, gradInputOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(0, gradInputOffset, 0);
 };
 
 /**
@@ -1578,9 +1476,9 @@ static endBackwardResult(builder:flatbuffers.Builder):flatbuffers.Offset {
   return offset;
 };
 
-static createBackwardResult(builder:flatbuffers.Builder, valuesOffset:flatbuffers.Offset):flatbuffers.Offset {
+static createBackwardResult(builder:flatbuffers.Builder, gradInputOffset:flatbuffers.Offset):flatbuffers.Offset {
   BackwardResult.startBackwardResult(builder);
-  BackwardResult.addValues(builder, valuesOffset);
+  BackwardResult.addGradInput(builder, gradInputOffset);
   return BackwardResult.endBackwardResult(builder);
 }
 }

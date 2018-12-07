@@ -27,28 +27,18 @@ function Forward_mt:Name()
         return self.view:String(o + self.view.pos)
     end
 end
-function Forward_mt:Arguments(j)
+function Forward_mt:Input()
     local o = self.view:Offset(6)
     if o ~= 0 then
-        local x = self.view:Vector(o)
-        x = x + ((j-1) * 4)
-        x = self.view:Indirect(x)
+        local x = self.view:Indirect(o + self.view.pos)
         local obj = require('ppx.Tensor').New()
         obj:Init(self.view.bytes, x)
         return obj
     end
 end
-function Forward_mt:ArgumentsLength()
-    local o = self.view:Offset(6)
-    if o ~= 0 then
-        return self.view:VectorLen(o)
-    end
-    return 0
-end
 function Forward.Start(builder) builder:StartObject(2) end
 function Forward.AddName(builder, name) builder:PrependUOffsetTRelativeSlot(0, name, 0) end
-function Forward.AddArguments(builder, arguments) builder:PrependUOffsetTRelativeSlot(1, arguments, 0) end
-function Forward.StartArgumentsVector(builder, numElems) return builder:StartVector(4, numElems, 4) end
+function Forward.AddInput(builder, input) builder:PrependUOffsetTRelativeSlot(1, input, 0) end
 function Forward.End(builder) return builder:EndObject() end
 
 return Forward -- return the module

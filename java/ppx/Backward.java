@@ -16,24 +16,26 @@ import com.google.flatbuffers.*;
   public String name() { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; }
   public ByteBuffer nameAsByteBuffer() { return __vector_as_bytebuffer(4, 1); }
   public ByteBuffer nameInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 4, 1); }
-  public Tensor arguments(int j) { return arguments(new Tensor(), j); }
-  public Tensor arguments(Tensor obj, int j) { int o = __offset(6); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
-  public int argumentsLength() { int o = __offset(6); return o != 0 ? __vector_len(o) : 0; }
+  public Tensor input() { return input(new Tensor()); }
+  public Tensor input(Tensor obj) { int o = __offset(6); return o != 0 ? obj.__assign(__indirect(o + bb_pos), bb) : null; }
+  public Tensor gradOutput() { return gradOutput(new Tensor()); }
+  public Tensor gradOutput(Tensor obj) { int o = __offset(8); return o != 0 ? obj.__assign(__indirect(o + bb_pos), bb) : null; }
 
   public static int createBackward(FlatBufferBuilder builder,
       int nameOffset,
-      int argumentsOffset) {
-    builder.startObject(2);
-    Backward.addArguments(builder, argumentsOffset);
+      int inputOffset,
+      int grad_outputOffset) {
+    builder.startObject(3);
+    Backward.addGradOutput(builder, grad_outputOffset);
+    Backward.addInput(builder, inputOffset);
     Backward.addName(builder, nameOffset);
     return Backward.endBackward(builder);
   }
 
-  public static void startBackward(FlatBufferBuilder builder) { builder.startObject(2); }
+  public static void startBackward(FlatBufferBuilder builder) { builder.startObject(3); }
   public static void addName(FlatBufferBuilder builder, int nameOffset) { builder.addOffset(0, nameOffset, 0); }
-  public static void addArguments(FlatBufferBuilder builder, int argumentsOffset) { builder.addOffset(1, argumentsOffset, 0); }
-  public static int createArgumentsVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
-  public static void startArgumentsVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
+  public static void addInput(FlatBufferBuilder builder, int inputOffset) { builder.addOffset(1, inputOffset, 0); }
+  public static void addGradOutput(FlatBufferBuilder builder, int gradOutputOffset) { builder.addOffset(2, gradOutputOffset, 0); }
   public static int endBackward(FlatBufferBuilder builder) {
     int o = builder.endObject();
     return o;

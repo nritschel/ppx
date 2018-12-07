@@ -42,23 +42,11 @@ class BackwardResult extends Table
         return $this;
     }
 
-    /**
-     * @returnVectorOffset
-     */
-    public function getValues($j)
+    public function getGradInput()
     {
-        $o = $this->__offset(4);
         $obj = new Tensor();
-        return $o != 0 ? $obj->init($this->__indirect($this->__vector($o) + $j * 4), $this->bb) : null;
-    }
-
-    /**
-     * @return int
-     */
-    public function getValuesLength()
-    {
         $o = $this->__offset(4);
-        return $o != 0 ? $this->__vector_len($o) : 0;
+        return $o != 0 ? $obj->init($this->__indirect($o + $this->bb_pos), $this->bb) : 0;
     }
 
     /**
@@ -74,46 +62,22 @@ class BackwardResult extends Table
      * @param FlatBufferBuilder $builder
      * @return BackwardResult
      */
-    public static function createBackwardResult(FlatBufferBuilder $builder, $values)
+    public static function createBackwardResult(FlatBufferBuilder $builder, $grad_input)
     {
         $builder->startObject(1);
-        self::addValues($builder, $values);
+        self::addGradInput($builder, $grad_input);
         $o = $builder->endObject();
         return $o;
     }
 
     /**
      * @param FlatBufferBuilder $builder
-     * @param VectorOffset
+     * @param int
      * @return void
      */
-    public static function addValues(FlatBufferBuilder $builder, $values)
+    public static function addGradInput(FlatBufferBuilder $builder, $gradInput)
     {
-        $builder->addOffsetX(0, $values, 0);
-    }
-
-    /**
-     * @param FlatBufferBuilder $builder
-     * @param array offset array
-     * @return int vector offset
-     */
-    public static function createValuesVector(FlatBufferBuilder $builder, array $data)
-    {
-        $builder->startVector(4, count($data), 4);
-        for ($i = count($data) - 1; $i >= 0; $i--) {
-            $builder->addOffset($data[$i]);
-        }
-        return $builder->endVector();
-    }
-
-    /**
-     * @param FlatBufferBuilder $builder
-     * @param int $numElems
-     * @return void
-     */
-    public static function startValuesVector(FlatBufferBuilder $builder, $numElems)
-    {
-        $builder->startVector(4, $numElems, 4);
+        $builder->addOffsetX(0, $gradInput, 0);
     }
 
     /**

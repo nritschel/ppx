@@ -1172,21 +1172,12 @@ ppx.Forward.prototype.name = function(optionalEncoding) {
 };
 
 /**
- * @param {number} index
  * @param {ppx.Tensor=} obj
- * @returns {ppx.Tensor}
+ * @returns {ppx.Tensor|null}
  */
-ppx.Forward.prototype.arguments = function(index, obj) {
+ppx.Forward.prototype.input = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? (obj || new ppx.Tensor).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-ppx.Forward.prototype.argumentsLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new ppx.Tensor).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -1206,31 +1197,10 @@ ppx.Forward.addName = function(builder, nameOffset) {
 
 /**
  * @param {flatbuffers.Builder} builder
- * @param {flatbuffers.Offset} argumentsOffset
+ * @param {flatbuffers.Offset} inputOffset
  */
-ppx.Forward.addArguments = function(builder, argumentsOffset) {
-  builder.addFieldOffset(1, argumentsOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-ppx.Forward.createArgumentsVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-ppx.Forward.startArgumentsVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
+ppx.Forward.addInput = function(builder, inputOffset) {
+  builder.addFieldOffset(1, inputOffset, 0);
 };
 
 /**
@@ -1278,21 +1248,12 @@ ppx.ForwardResult.getRootAsForwardResult = function(bb, obj) {
 };
 
 /**
- * @param {number} index
  * @param {ppx.Tensor=} obj
- * @returns {ppx.Tensor}
+ * @returns {ppx.Tensor|null}
  */
-ppx.ForwardResult.prototype.values = function(index, obj) {
+ppx.ForwardResult.prototype.output = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? (obj || new ppx.Tensor).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-ppx.ForwardResult.prototype.valuesLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new ppx.Tensor).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -1304,31 +1265,10 @@ ppx.ForwardResult.startForwardResult = function(builder) {
 
 /**
  * @param {flatbuffers.Builder} builder
- * @param {flatbuffers.Offset} valuesOffset
+ * @param {flatbuffers.Offset} outputOffset
  */
-ppx.ForwardResult.addValues = function(builder, valuesOffset) {
-  builder.addFieldOffset(0, valuesOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-ppx.ForwardResult.createValuesVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-ppx.ForwardResult.startValuesVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
+ppx.ForwardResult.addOutput = function(builder, outputOffset) {
+  builder.addFieldOffset(0, outputOffset, 0);
 };
 
 /**
@@ -1385,28 +1325,28 @@ ppx.Backward.prototype.name = function(optionalEncoding) {
 };
 
 /**
- * @param {number} index
  * @param {ppx.Tensor=} obj
- * @returns {ppx.Tensor}
+ * @returns {ppx.Tensor|null}
  */
-ppx.Backward.prototype.arguments = function(index, obj) {
+ppx.Backward.prototype.input = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? (obj || new ppx.Tensor).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
+  return offset ? (obj || new ppx.Tensor).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
- * @returns {number}
+ * @param {ppx.Tensor=} obj
+ * @returns {ppx.Tensor|null}
  */
-ppx.Backward.prototype.argumentsLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 6);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+ppx.Backward.prototype.gradOutput = function(obj) {
+  var offset = this.bb.__offset(this.bb_pos, 8);
+  return offset ? (obj || new ppx.Tensor).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
  * @param {flatbuffers.Builder} builder
  */
 ppx.Backward.startBackward = function(builder) {
-  builder.startObject(2);
+  builder.startObject(3);
 };
 
 /**
@@ -1419,31 +1359,18 @@ ppx.Backward.addName = function(builder, nameOffset) {
 
 /**
  * @param {flatbuffers.Builder} builder
- * @param {flatbuffers.Offset} argumentsOffset
+ * @param {flatbuffers.Offset} inputOffset
  */
-ppx.Backward.addArguments = function(builder, argumentsOffset) {
-  builder.addFieldOffset(1, argumentsOffset, 0);
+ppx.Backward.addInput = function(builder, inputOffset) {
+  builder.addFieldOffset(1, inputOffset, 0);
 };
 
 /**
  * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
+ * @param {flatbuffers.Offset} gradOutputOffset
  */
-ppx.Backward.createArgumentsVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-ppx.Backward.startArgumentsVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
+ppx.Backward.addGradOutput = function(builder, gradOutputOffset) {
+  builder.addFieldOffset(2, gradOutputOffset, 0);
 };
 
 /**
@@ -1491,21 +1418,12 @@ ppx.BackwardResult.getRootAsBackwardResult = function(bb, obj) {
 };
 
 /**
- * @param {number} index
  * @param {ppx.Tensor=} obj
- * @returns {ppx.Tensor}
+ * @returns {ppx.Tensor|null}
  */
-ppx.BackwardResult.prototype.values = function(index, obj) {
+ppx.BackwardResult.prototype.gradInput = function(obj) {
   var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? (obj || new ppx.Tensor).__init(this.bb.__indirect(this.bb.__vector(this.bb_pos + offset) + index * 4), this.bb) : null;
-};
-
-/**
- * @returns {number}
- */
-ppx.BackwardResult.prototype.valuesLength = function() {
-  var offset = this.bb.__offset(this.bb_pos, 4);
-  return offset ? this.bb.__vector_len(this.bb_pos + offset) : 0;
+  return offset ? (obj || new ppx.Tensor).__init(this.bb.__indirect(this.bb_pos + offset), this.bb) : null;
 };
 
 /**
@@ -1517,31 +1435,10 @@ ppx.BackwardResult.startBackwardResult = function(builder) {
 
 /**
  * @param {flatbuffers.Builder} builder
- * @param {flatbuffers.Offset} valuesOffset
+ * @param {flatbuffers.Offset} gradInputOffset
  */
-ppx.BackwardResult.addValues = function(builder, valuesOffset) {
-  builder.addFieldOffset(0, valuesOffset, 0);
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {Array.<flatbuffers.Offset>} data
- * @returns {flatbuffers.Offset}
- */
-ppx.BackwardResult.createValuesVector = function(builder, data) {
-  builder.startVector(4, data.length, 4);
-  for (var i = data.length - 1; i >= 0; i--) {
-    builder.addOffset(data[i]);
-  }
-  return builder.endVector();
-};
-
-/**
- * @param {flatbuffers.Builder} builder
- * @param {number} numElems
- */
-ppx.BackwardResult.startValuesVector = function(builder, numElems) {
-  builder.startVector(4, numElems, 4);
+ppx.BackwardResult.addGradInput = function(builder, gradInputOffset) {
+  builder.addFieldOffset(0, gradInputOffset, 0);
 };
 
 /**

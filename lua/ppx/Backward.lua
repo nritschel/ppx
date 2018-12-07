@@ -27,28 +27,28 @@ function Backward_mt:Name()
         return self.view:String(o + self.view.pos)
     end
 end
-function Backward_mt:Arguments(j)
+function Backward_mt:Input()
     local o = self.view:Offset(6)
     if o ~= 0 then
-        local x = self.view:Vector(o)
-        x = x + ((j-1) * 4)
-        x = self.view:Indirect(x)
+        local x = self.view:Indirect(o + self.view.pos)
         local obj = require('ppx.Tensor').New()
         obj:Init(self.view.bytes, x)
         return obj
     end
 end
-function Backward_mt:ArgumentsLength()
-    local o = self.view:Offset(6)
+function Backward_mt:GradOutput()
+    local o = self.view:Offset(8)
     if o ~= 0 then
-        return self.view:VectorLen(o)
+        local x = self.view:Indirect(o + self.view.pos)
+        local obj = require('ppx.Tensor').New()
+        obj:Init(self.view.bytes, x)
+        return obj
     end
-    return 0
 end
-function Backward.Start(builder) builder:StartObject(2) end
+function Backward.Start(builder) builder:StartObject(3) end
 function Backward.AddName(builder, name) builder:PrependUOffsetTRelativeSlot(0, name, 0) end
-function Backward.AddArguments(builder, arguments) builder:PrependUOffsetTRelativeSlot(1, arguments, 0) end
-function Backward.StartArgumentsVector(builder, numElems) return builder:StartVector(4, numElems, 4) end
+function Backward.AddInput(builder, input) builder:PrependUOffsetTRelativeSlot(1, input, 0) end
+function Backward.AddGradOutput(builder, gradOutput) builder:PrependUOffsetTRelativeSlot(2, gradOutput, 0) end
 function Backward.End(builder) return builder:EndObject() end
 
 return Backward -- return the module

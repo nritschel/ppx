@@ -86,20 +86,21 @@ table TagResult {}
 
 table Forward {
   name: string;
-  arguments: [Tensor];
+  input: Tensor;
 }
 
 table ForwardResult {
-  values: [Tensor];
+  output: Tensor;
 }
 
 table Backward {
   name: string;
-  arguments: [Tensor];
+  input: Tensor;
+  grad_output: Tensor;
 }
 
 table BackwardResult {
-  values: [Tensor];
+  grad_input: Tensor;
 }
 
 table Reset {}

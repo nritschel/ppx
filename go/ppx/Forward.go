@@ -34,24 +34,17 @@ func (rcv *Forward) Name() []byte {
 	return nil
 }
 
-func (rcv *Forward) Arguments(obj *Tensor, j int) bool {
+func (rcv *Forward) Input(obj *Tensor) *Tensor {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
-		x := rcv._tab.Vector(o)
-		x += flatbuffers.UOffsetT(j) * 4
-		x = rcv._tab.Indirect(x)
+		x := rcv._tab.Indirect(o + rcv._tab.Pos)
+		if obj == nil {
+			obj = new(Tensor)
+		}
 		obj.Init(rcv._tab.Bytes, x)
-		return true
+		return obj
 	}
-	return false
-}
-
-func (rcv *Forward) ArgumentsLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
-	if o != 0 {
-		return rcv._tab.VectorLen(o)
-	}
-	return 0
+	return nil
 }
 
 func ForwardStart(builder *flatbuffers.Builder) {
@@ -60,11 +53,8 @@ func ForwardStart(builder *flatbuffers.Builder) {
 func ForwardAddName(builder *flatbuffers.Builder, name flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(name), 0)
 }
-func ForwardAddArguments(builder *flatbuffers.Builder, arguments flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(arguments), 0)
-}
-func ForwardStartArgumentsVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
-	return builder.StartVector(4, numElems, 4)
+func ForwardAddInput(builder *flatbuffers.Builder, input flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(input), 0)
 }
 func ForwardEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

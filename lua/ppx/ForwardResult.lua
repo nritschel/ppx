@@ -21,27 +21,17 @@ end
 function ForwardResult_mt:Init(buf, pos)
     self.view = flatbuffers.view.New(buf, pos)
 end
-function ForwardResult_mt:Values(j)
+function ForwardResult_mt:Output()
     local o = self.view:Offset(4)
     if o ~= 0 then
-        local x = self.view:Vector(o)
-        x = x + ((j-1) * 4)
-        x = self.view:Indirect(x)
+        local x = self.view:Indirect(o + self.view.pos)
         local obj = require('ppx.Tensor').New()
         obj:Init(self.view.bytes, x)
         return obj
     end
 end
-function ForwardResult_mt:ValuesLength()
-    local o = self.view:Offset(4)
-    if o ~= 0 then
-        return self.view:VectorLen(o)
-    end
-    return 0
-end
 function ForwardResult.Start(builder) builder:StartObject(1) end
-function ForwardResult.AddValues(builder, values) builder:PrependUOffsetTRelativeSlot(0, values, 0) end
-function ForwardResult.StartValuesVector(builder, numElems) return builder:StartVector(4, numElems, 4) end
+function ForwardResult.AddOutput(builder, output) builder:PrependUOffsetTRelativeSlot(0, output, 0) end
 function ForwardResult.End(builder) return builder:EndObject() end
 
 return ForwardResult -- return the module

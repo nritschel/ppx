@@ -21,27 +21,17 @@ end
 function BackwardResult_mt:Init(buf, pos)
     self.view = flatbuffers.view.New(buf, pos)
 end
-function BackwardResult_mt:Values(j)
+function BackwardResult_mt:GradInput()
     local o = self.view:Offset(4)
     if o ~= 0 then
-        local x = self.view:Vector(o)
-        x = x + ((j-1) * 4)
-        x = self.view:Indirect(x)
+        local x = self.view:Indirect(o + self.view.pos)
         local obj = require('ppx.Tensor').New()
         obj:Init(self.view.bytes, x)
         return obj
     end
 end
-function BackwardResult_mt:ValuesLength()
-    local o = self.view:Offset(4)
-    if o ~= 0 then
-        return self.view:VectorLen(o)
-    end
-    return 0
-end
 function BackwardResult.Start(builder) builder:StartObject(1) end
-function BackwardResult.AddValues(builder, values) builder:PrependUOffsetTRelativeSlot(0, values, 0) end
-function BackwardResult.StartValuesVector(builder, numElems) return builder:StartVector(4, numElems, 4) end
+function BackwardResult.AddGradInput(builder, gradInput) builder:PrependUOffsetTRelativeSlot(0, gradInput, 0) end
 function BackwardResult.End(builder) return builder:EndObject() end
 
 return BackwardResult -- return the module

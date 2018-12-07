@@ -1484,34 +1484,34 @@ impl<'a> Forward<'a> {
         _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr>,
         args: &'args ForwardArgs<'args>) -> flatbuffers::WIPOffset<Forward<'bldr>> {
       let mut builder = ForwardBuilder::new(_fbb);
-      if let Some(x) = args.arguments { builder.add_arguments(x); }
+      if let Some(x) = args.input { builder.add_input(x); }
       if let Some(x) = args.name { builder.add_name(x); }
       builder.finish()
     }
 
     pub const VT_NAME: flatbuffers::VOffsetT = 4;
-    pub const VT_ARGUMENTS: flatbuffers::VOffsetT = 6;
+    pub const VT_INPUT: flatbuffers::VOffsetT = 6;
 
   #[inline]
   pub fn name(&self) -> Option<&'a str> {
     self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(Forward::VT_NAME, None)
   }
   #[inline]
-  pub fn arguments(&self) -> Option<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Tensor<'a>>>> {
-    self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Tensor<'a>>>>>(Forward::VT_ARGUMENTS, None)
+  pub fn input(&self) -> Option<Tensor<'a>> {
+    self._tab.get::<flatbuffers::ForwardsUOffset<Tensor<'a>>>(Forward::VT_INPUT, None)
   }
 }
 
 pub struct ForwardArgs<'a> {
     pub name: Option<flatbuffers::WIPOffset<&'a  str>>,
-    pub arguments: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a , flatbuffers::ForwardsUOffset<Tensor<'a >>>>>,
+    pub input: Option<flatbuffers::WIPOffset<Tensor<'a >>>,
 }
 impl<'a> Default for ForwardArgs<'a> {
     #[inline]
     fn default() -> Self {
         ForwardArgs {
             name: None,
-            arguments: None,
+            input: None,
         }
     }
 }
@@ -1525,8 +1525,8 @@ impl<'a: 'b, 'b> ForwardBuilder<'a, 'b> {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Forward::VT_NAME, name);
   }
   #[inline]
-  pub fn add_arguments(&mut self, arguments: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Tensor<'b >>>>) {
-    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Forward::VT_ARGUMENTS, arguments);
+  pub fn add_input(&mut self, input: flatbuffers::WIPOffset<Tensor<'b >>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<Tensor>>(Forward::VT_INPUT, input);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a>) -> ForwardBuilder<'a, 'b> {
@@ -1572,26 +1572,26 @@ impl<'a> ForwardResult<'a> {
         _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr>,
         args: &'args ForwardResultArgs<'args>) -> flatbuffers::WIPOffset<ForwardResult<'bldr>> {
       let mut builder = ForwardResultBuilder::new(_fbb);
-      if let Some(x) = args.values { builder.add_values(x); }
+      if let Some(x) = args.output { builder.add_output(x); }
       builder.finish()
     }
 
-    pub const VT_VALUES: flatbuffers::VOffsetT = 4;
+    pub const VT_OUTPUT: flatbuffers::VOffsetT = 4;
 
   #[inline]
-  pub fn values(&self) -> Option<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Tensor<'a>>>> {
-    self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Tensor<'a>>>>>(ForwardResult::VT_VALUES, None)
+  pub fn output(&self) -> Option<Tensor<'a>> {
+    self._tab.get::<flatbuffers::ForwardsUOffset<Tensor<'a>>>(ForwardResult::VT_OUTPUT, None)
   }
 }
 
 pub struct ForwardResultArgs<'a> {
-    pub values: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a , flatbuffers::ForwardsUOffset<Tensor<'a >>>>>,
+    pub output: Option<flatbuffers::WIPOffset<Tensor<'a >>>,
 }
 impl<'a> Default for ForwardResultArgs<'a> {
     #[inline]
     fn default() -> Self {
         ForwardResultArgs {
-            values: None,
+            output: None,
         }
     }
 }
@@ -1601,8 +1601,8 @@ pub struct ForwardResultBuilder<'a: 'b, 'b> {
 }
 impl<'a: 'b, 'b> ForwardResultBuilder<'a, 'b> {
   #[inline]
-  pub fn add_values(&mut self, values: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Tensor<'b >>>>) {
-    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(ForwardResult::VT_VALUES, values);
+  pub fn add_output(&mut self, output: flatbuffers::WIPOffset<Tensor<'b >>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<Tensor>>(ForwardResult::VT_OUTPUT, output);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a>) -> ForwardResultBuilder<'a, 'b> {
@@ -1648,34 +1648,42 @@ impl<'a> Backward<'a> {
         _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr>,
         args: &'args BackwardArgs<'args>) -> flatbuffers::WIPOffset<Backward<'bldr>> {
       let mut builder = BackwardBuilder::new(_fbb);
-      if let Some(x) = args.arguments { builder.add_arguments(x); }
+      if let Some(x) = args.grad_output { builder.add_grad_output(x); }
+      if let Some(x) = args.input { builder.add_input(x); }
       if let Some(x) = args.name { builder.add_name(x); }
       builder.finish()
     }
 
     pub const VT_NAME: flatbuffers::VOffsetT = 4;
-    pub const VT_ARGUMENTS: flatbuffers::VOffsetT = 6;
+    pub const VT_INPUT: flatbuffers::VOffsetT = 6;
+    pub const VT_GRAD_OUTPUT: flatbuffers::VOffsetT = 8;
 
   #[inline]
   pub fn name(&self) -> Option<&'a str> {
     self._tab.get::<flatbuffers::ForwardsUOffset<&str>>(Backward::VT_NAME, None)
   }
   #[inline]
-  pub fn arguments(&self) -> Option<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Tensor<'a>>>> {
-    self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Tensor<'a>>>>>(Backward::VT_ARGUMENTS, None)
+  pub fn input(&self) -> Option<Tensor<'a>> {
+    self._tab.get::<flatbuffers::ForwardsUOffset<Tensor<'a>>>(Backward::VT_INPUT, None)
+  }
+  #[inline]
+  pub fn grad_output(&self) -> Option<Tensor<'a>> {
+    self._tab.get::<flatbuffers::ForwardsUOffset<Tensor<'a>>>(Backward::VT_GRAD_OUTPUT, None)
   }
 }
 
 pub struct BackwardArgs<'a> {
     pub name: Option<flatbuffers::WIPOffset<&'a  str>>,
-    pub arguments: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a , flatbuffers::ForwardsUOffset<Tensor<'a >>>>>,
+    pub input: Option<flatbuffers::WIPOffset<Tensor<'a >>>,
+    pub grad_output: Option<flatbuffers::WIPOffset<Tensor<'a >>>,
 }
 impl<'a> Default for BackwardArgs<'a> {
     #[inline]
     fn default() -> Self {
         BackwardArgs {
             name: None,
-            arguments: None,
+            input: None,
+            grad_output: None,
         }
     }
 }
@@ -1689,8 +1697,12 @@ impl<'a: 'b, 'b> BackwardBuilder<'a, 'b> {
     self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Backward::VT_NAME, name);
   }
   #[inline]
-  pub fn add_arguments(&mut self, arguments: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Tensor<'b >>>>) {
-    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(Backward::VT_ARGUMENTS, arguments);
+  pub fn add_input(&mut self, input: flatbuffers::WIPOffset<Tensor<'b >>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<Tensor>>(Backward::VT_INPUT, input);
+  }
+  #[inline]
+  pub fn add_grad_output(&mut self, grad_output: flatbuffers::WIPOffset<Tensor<'b >>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<Tensor>>(Backward::VT_GRAD_OUTPUT, grad_output);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a>) -> BackwardBuilder<'a, 'b> {
@@ -1736,26 +1748,26 @@ impl<'a> BackwardResult<'a> {
         _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr>,
         args: &'args BackwardResultArgs<'args>) -> flatbuffers::WIPOffset<BackwardResult<'bldr>> {
       let mut builder = BackwardResultBuilder::new(_fbb);
-      if let Some(x) = args.values { builder.add_values(x); }
+      if let Some(x) = args.grad_input { builder.add_grad_input(x); }
       builder.finish()
     }
 
-    pub const VT_VALUES: flatbuffers::VOffsetT = 4;
+    pub const VT_GRAD_INPUT: flatbuffers::VOffsetT = 4;
 
   #[inline]
-  pub fn values(&self) -> Option<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Tensor<'a>>>> {
-    self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Tensor<'a>>>>>(BackwardResult::VT_VALUES, None)
+  pub fn grad_input(&self) -> Option<Tensor<'a>> {
+    self._tab.get::<flatbuffers::ForwardsUOffset<Tensor<'a>>>(BackwardResult::VT_GRAD_INPUT, None)
   }
 }
 
 pub struct BackwardResultArgs<'a> {
-    pub values: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a , flatbuffers::ForwardsUOffset<Tensor<'a >>>>>,
+    pub grad_input: Option<flatbuffers::WIPOffset<Tensor<'a >>>,
 }
 impl<'a> Default for BackwardResultArgs<'a> {
     #[inline]
     fn default() -> Self {
         BackwardResultArgs {
-            values: None,
+            grad_input: None,
         }
     }
 }
@@ -1765,8 +1777,8 @@ pub struct BackwardResultBuilder<'a: 'b, 'b> {
 }
 impl<'a: 'b, 'b> BackwardResultBuilder<'a, 'b> {
   #[inline]
-  pub fn add_values(&mut self, values: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Tensor<'b >>>>) {
-    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(BackwardResult::VT_VALUES, values);
+  pub fn add_grad_input(&mut self, grad_input: flatbuffers::WIPOffset<Tensor<'b >>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<Tensor>>(BackwardResult::VT_GRAD_INPUT, grad_input);
   }
   #[inline]
   pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a>) -> BackwardResultBuilder<'a, 'b> {

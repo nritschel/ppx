@@ -1165,11 +1165,11 @@ class Forward {
   final int _bcOffset;
 
   String get name => const fb.StringReader().vTableGet(_bc, _bcOffset, 4, null);
-  List<Tensor> get arguments => const fb.ListReader<Tensor>(Tensor.reader).vTableGet(_bc, _bcOffset, 6, null);
+  Tensor get input => Tensor.reader.vTableGet(_bc, _bcOffset, 6, null);
 
   @override
   String toString() {
-    return 'Forward{name: $name, arguments: $arguments}';
+    return 'Forward{name: $name, input: $input}';
   }
 }
 
@@ -1196,7 +1196,7 @@ class ForwardBuilder {
     fbBuilder.addOffset(0, offset);
     return fbBuilder.offset;
   }
-  int addArgumentsOffset(int offset) {
+  int addInputOffset(int offset) {
     fbBuilder.addOffset(1, offset);
     return fbBuilder.offset;
   }
@@ -1208,14 +1208,14 @@ class ForwardBuilder {
 
 class ForwardObjectBuilder extends fb.ObjectBuilder {
   final String _name;
-  final List<TensorObjectBuilder> _arguments;
+  final TensorObjectBuilder _input;
 
   ForwardObjectBuilder({
     String name,
-    List<TensorObjectBuilder> arguments,
+    TensorObjectBuilder input,
   })
       : _name = name,
-        _arguments = arguments;
+        _input = input;
 
   /// Finish building, and store into the [fbBuilder].
   @override
@@ -1223,16 +1223,14 @@ class ForwardObjectBuilder extends fb.ObjectBuilder {
     fb.Builder fbBuilder) {
     assert(fbBuilder != null);
     final int nameOffset = fbBuilder.writeString(_name);
-    final int argumentsOffset = _arguments?.isNotEmpty == true
-        ? fbBuilder.writeList(_arguments.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
-        : null;
+    final int inputOffset = _input?.getOrCreateOffset(fbBuilder);
 
     fbBuilder.startTable();
     if (nameOffset != null) {
       fbBuilder.addOffset(0, nameOffset);
     }
-    if (argumentsOffset != null) {
-      fbBuilder.addOffset(1, argumentsOffset);
+    if (inputOffset != null) {
+      fbBuilder.addOffset(1, inputOffset);
     }
     return fbBuilder.endTable();
   }
@@ -1257,11 +1255,11 @@ class ForwardResult {
   final fb.BufferContext _bc;
   final int _bcOffset;
 
-  List<Tensor> get values => const fb.ListReader<Tensor>(Tensor.reader).vTableGet(_bc, _bcOffset, 4, null);
+  Tensor get output => Tensor.reader.vTableGet(_bc, _bcOffset, 4, null);
 
   @override
   String toString() {
-    return 'ForwardResult{values: $values}';
+    return 'ForwardResult{output: $output}';
   }
 }
 
@@ -1284,7 +1282,7 @@ class ForwardResultBuilder {
     fbBuilder.startTable();
   }
 
-  int addValuesOffset(int offset) {
+  int addOutputOffset(int offset) {
     fbBuilder.addOffset(0, offset);
     return fbBuilder.offset;
   }
@@ -1295,25 +1293,23 @@ class ForwardResultBuilder {
 }
 
 class ForwardResultObjectBuilder extends fb.ObjectBuilder {
-  final List<TensorObjectBuilder> _values;
+  final TensorObjectBuilder _output;
 
   ForwardResultObjectBuilder({
-    List<TensorObjectBuilder> values,
+    TensorObjectBuilder output,
   })
-      : _values = values;
+      : _output = output;
 
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(
     fb.Builder fbBuilder) {
     assert(fbBuilder != null);
-    final int valuesOffset = _values?.isNotEmpty == true
-        ? fbBuilder.writeList(_values.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
-        : null;
+    final int outputOffset = _output?.getOrCreateOffset(fbBuilder);
 
     fbBuilder.startTable();
-    if (valuesOffset != null) {
-      fbBuilder.addOffset(0, valuesOffset);
+    if (outputOffset != null) {
+      fbBuilder.addOffset(0, outputOffset);
     }
     return fbBuilder.endTable();
   }
@@ -1339,11 +1335,12 @@ class Backward {
   final int _bcOffset;
 
   String get name => const fb.StringReader().vTableGet(_bc, _bcOffset, 4, null);
-  List<Tensor> get arguments => const fb.ListReader<Tensor>(Tensor.reader).vTableGet(_bc, _bcOffset, 6, null);
+  Tensor get input => Tensor.reader.vTableGet(_bc, _bcOffset, 6, null);
+  Tensor get gradOutput => Tensor.reader.vTableGet(_bc, _bcOffset, 8, null);
 
   @override
   String toString() {
-    return 'Backward{name: $name, arguments: $arguments}';
+    return 'Backward{name: $name, input: $input, gradOutput: $gradOutput}';
   }
 }
 
@@ -1370,8 +1367,12 @@ class BackwardBuilder {
     fbBuilder.addOffset(0, offset);
     return fbBuilder.offset;
   }
-  int addArgumentsOffset(int offset) {
+  int addInputOffset(int offset) {
     fbBuilder.addOffset(1, offset);
+    return fbBuilder.offset;
+  }
+  int addGradOutputOffset(int offset) {
+    fbBuilder.addOffset(2, offset);
     return fbBuilder.offset;
   }
 
@@ -1382,14 +1383,17 @@ class BackwardBuilder {
 
 class BackwardObjectBuilder extends fb.ObjectBuilder {
   final String _name;
-  final List<TensorObjectBuilder> _arguments;
+  final TensorObjectBuilder _input;
+  final TensorObjectBuilder _gradOutput;
 
   BackwardObjectBuilder({
     String name,
-    List<TensorObjectBuilder> arguments,
+    TensorObjectBuilder input,
+    TensorObjectBuilder gradOutput,
   })
       : _name = name,
-        _arguments = arguments;
+        _input = input,
+        _gradOutput = gradOutput;
 
   /// Finish building, and store into the [fbBuilder].
   @override
@@ -1397,16 +1401,18 @@ class BackwardObjectBuilder extends fb.ObjectBuilder {
     fb.Builder fbBuilder) {
     assert(fbBuilder != null);
     final int nameOffset = fbBuilder.writeString(_name);
-    final int argumentsOffset = _arguments?.isNotEmpty == true
-        ? fbBuilder.writeList(_arguments.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
-        : null;
+    final int inputOffset = _input?.getOrCreateOffset(fbBuilder);
+    final int gradOutputOffset = _gradOutput?.getOrCreateOffset(fbBuilder);
 
     fbBuilder.startTable();
     if (nameOffset != null) {
       fbBuilder.addOffset(0, nameOffset);
     }
-    if (argumentsOffset != null) {
-      fbBuilder.addOffset(1, argumentsOffset);
+    if (inputOffset != null) {
+      fbBuilder.addOffset(1, inputOffset);
+    }
+    if (gradOutputOffset != null) {
+      fbBuilder.addOffset(2, gradOutputOffset);
     }
     return fbBuilder.endTable();
   }
@@ -1431,11 +1437,11 @@ class BackwardResult {
   final fb.BufferContext _bc;
   final int _bcOffset;
 
-  List<Tensor> get values => const fb.ListReader<Tensor>(Tensor.reader).vTableGet(_bc, _bcOffset, 4, null);
+  Tensor get gradInput => Tensor.reader.vTableGet(_bc, _bcOffset, 4, null);
 
   @override
   String toString() {
-    return 'BackwardResult{values: $values}';
+    return 'BackwardResult{gradInput: $gradInput}';
   }
 }
 
@@ -1458,7 +1464,7 @@ class BackwardResultBuilder {
     fbBuilder.startTable();
   }
 
-  int addValuesOffset(int offset) {
+  int addGradInputOffset(int offset) {
     fbBuilder.addOffset(0, offset);
     return fbBuilder.offset;
   }
@@ -1469,25 +1475,23 @@ class BackwardResultBuilder {
 }
 
 class BackwardResultObjectBuilder extends fb.ObjectBuilder {
-  final List<TensorObjectBuilder> _values;
+  final TensorObjectBuilder _gradInput;
 
   BackwardResultObjectBuilder({
-    List<TensorObjectBuilder> values,
+    TensorObjectBuilder gradInput,
   })
-      : _values = values;
+      : _gradInput = gradInput;
 
   /// Finish building, and store into the [fbBuilder].
   @override
   int finish(
     fb.Builder fbBuilder) {
     assert(fbBuilder != null);
-    final int valuesOffset = _values?.isNotEmpty == true
-        ? fbBuilder.writeList(_values.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
-        : null;
+    final int gradInputOffset = _gradInput?.getOrCreateOffset(fbBuilder);
 
     fbBuilder.startTable();
-    if (valuesOffset != null) {
-      fbBuilder.addOffset(0, valuesOffset);
+    if (gradInputOffset != null) {
+      fbBuilder.addOffset(0, gradInputOffset);
     }
     return fbBuilder.endTable();
   }

@@ -26,34 +26,24 @@ func (rcv *BackwardResult) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *BackwardResult) Values(obj *Tensor, j int) bool {
+func (rcv *BackwardResult) GradInput(obj *Tensor) *Tensor {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
-		x := rcv._tab.Vector(o)
-		x += flatbuffers.UOffsetT(j) * 4
-		x = rcv._tab.Indirect(x)
+		x := rcv._tab.Indirect(o + rcv._tab.Pos)
+		if obj == nil {
+			obj = new(Tensor)
+		}
 		obj.Init(rcv._tab.Bytes, x)
-		return true
+		return obj
 	}
-	return false
-}
-
-func (rcv *BackwardResult) ValuesLength() int {
-	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
-	if o != 0 {
-		return rcv._tab.VectorLen(o)
-	}
-	return 0
+	return nil
 }
 
 func BackwardResultStart(builder *flatbuffers.Builder) {
 	builder.StartObject(1)
 }
-func BackwardResultAddValues(builder *flatbuffers.Builder, values flatbuffers.UOffsetT) {
-	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(values), 0)
-}
-func BackwardResultStartValuesVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
-	return builder.StartVector(4, numElems, 4)
+func BackwardResultAddGradInput(builder *flatbuffers.Builder, gradInput flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(gradInput), 0)
 }
 func BackwardResultEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()

@@ -26,12 +26,10 @@ class Backward(object):
         return None
 
     # Backward
-    def Arguments(self, j):
+    def Input(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         if o != 0:
-            x = self._tab.Vector(o)
-            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
-            x = self._tab.Indirect(x)
+            x = self._tab.Indirect(o + self._tab.Pos)
             from .Tensor import Tensor
             obj = Tensor()
             obj.Init(self._tab.Bytes, x)
@@ -39,14 +37,18 @@ class Backward(object):
         return None
 
     # Backward
-    def ArgumentsLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
+    def GradOutput(self):
+        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(8))
         if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+            x = self._tab.Indirect(o + self._tab.Pos)
+            from .Tensor import Tensor
+            obj = Tensor()
+            obj.Init(self._tab.Bytes, x)
+            return obj
+        return None
 
-def BackwardStart(builder): builder.StartObject(2)
+def BackwardStart(builder): builder.StartObject(3)
 def BackwardAddName(builder, name): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(name), 0)
-def BackwardAddArguments(builder, arguments): builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(arguments), 0)
-def BackwardStartArgumentsVector(builder, numElems): return builder.StartVector(4, numElems, 4)
+def BackwardAddInput(builder, input): builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(input), 0)
+def BackwardAddGradOutput(builder, gradOutput): builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(gradOutput), 0)
 def BackwardEnd(builder): return builder.EndObject()

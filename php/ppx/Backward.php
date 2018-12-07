@@ -48,23 +48,18 @@ class Backward extends Table
         return $o != 0 ? $this->__string($o + $this->bb_pos) : null;
     }
 
-    /**
-     * @returnVectorOffset
-     */
-    public function getArguments($j)
+    public function getInput()
     {
-        $o = $this->__offset(6);
         $obj = new Tensor();
-        return $o != 0 ? $obj->init($this->__indirect($this->__vector($o) + $j * 4), $this->bb) : null;
+        $o = $this->__offset(6);
+        return $o != 0 ? $obj->init($this->__indirect($o + $this->bb_pos), $this->bb) : 0;
     }
 
-    /**
-     * @return int
-     */
-    public function getArgumentsLength()
+    public function getGradOutput()
     {
-        $o = $this->__offset(6);
-        return $o != 0 ? $this->__vector_len($o) : 0;
+        $obj = new Tensor();
+        $o = $this->__offset(8);
+        return $o != 0 ? $obj->init($this->__indirect($o + $this->bb_pos), $this->bb) : 0;
     }
 
     /**
@@ -73,18 +68,19 @@ class Backward extends Table
      */
     public static function startBackward(FlatBufferBuilder $builder)
     {
-        $builder->StartObject(2);
+        $builder->StartObject(3);
     }
 
     /**
      * @param FlatBufferBuilder $builder
      * @return Backward
      */
-    public static function createBackward(FlatBufferBuilder $builder, $name, $arguments)
+    public static function createBackward(FlatBufferBuilder $builder, $name, $input, $grad_output)
     {
-        $builder->startObject(2);
+        $builder->startObject(3);
         self::addName($builder, $name);
-        self::addArguments($builder, $arguments);
+        self::addInput($builder, $input);
+        self::addGradOutput($builder, $grad_output);
         $o = $builder->endObject();
         return $o;
     }
@@ -101,36 +97,22 @@ class Backward extends Table
 
     /**
      * @param FlatBufferBuilder $builder
-     * @param VectorOffset
+     * @param int
      * @return void
      */
-    public static function addArguments(FlatBufferBuilder $builder, $arguments)
+    public static function addInput(FlatBufferBuilder $builder, $input)
     {
-        $builder->addOffsetX(1, $arguments, 0);
+        $builder->addOffsetX(1, $input, 0);
     }
 
     /**
      * @param FlatBufferBuilder $builder
-     * @param array offset array
-     * @return int vector offset
-     */
-    public static function createArgumentsVector(FlatBufferBuilder $builder, array $data)
-    {
-        $builder->startVector(4, count($data), 4);
-        for ($i = count($data) - 1; $i >= 0; $i--) {
-            $builder->addOffset($data[$i]);
-        }
-        return $builder->endVector();
-    }
-
-    /**
-     * @param FlatBufferBuilder $builder
-     * @param int $numElems
+     * @param int
      * @return void
      */
-    public static function startArgumentsVector(FlatBufferBuilder $builder, $numElems)
+    public static function addGradOutput(FlatBufferBuilder $builder, $gradOutput)
     {
-        $builder->startVector(4, $numElems, 4);
+        $builder->addOffsetX(2, $gradOutput, 0);
     }
 
     /**

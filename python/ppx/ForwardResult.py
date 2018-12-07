@@ -19,26 +19,16 @@ class ForwardResult(object):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # ForwardResult
-    def Values(self, j):
+    def Output(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            x = self._tab.Vector(o)
-            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
-            x = self._tab.Indirect(x)
+            x = self._tab.Indirect(o + self._tab.Pos)
             from .Tensor import Tensor
             obj = Tensor()
             obj.Init(self._tab.Bytes, x)
             return obj
         return None
 
-    # ForwardResult
-    def ValuesLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
-
 def ForwardResultStart(builder): builder.StartObject(1)
-def ForwardResultAddValues(builder, values): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(values), 0)
-def ForwardResultStartValuesVector(builder, numElems): return builder.StartVector(4, numElems, 4)
+def ForwardResultAddOutput(builder, output): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(output), 0)
 def ForwardResultEnd(builder): return builder.EndObject()

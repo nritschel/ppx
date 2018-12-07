@@ -1105,21 +1105,20 @@ inline flatbuffers::Offset<TagResult> CreateTagResult(
 struct Forward FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NAME = 4,
-    VT_ARGUMENTS = 6
+    VT_INPUT = 6
   };
   const flatbuffers::String *name() const {
     return GetPointer<const flatbuffers::String *>(VT_NAME);
   }
-  const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *arguments() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *>(VT_ARGUMENTS);
+  const Tensor *input() const {
+    return GetPointer<const Tensor *>(VT_INPUT);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_NAME) &&
            verifier.VerifyString(name()) &&
-           VerifyOffset(verifier, VT_ARGUMENTS) &&
-           verifier.VerifyVector(arguments()) &&
-           verifier.VerifyVectorOfTables(arguments()) &&
+           VerifyOffset(verifier, VT_INPUT) &&
+           verifier.VerifyTable(input()) &&
            verifier.EndTable();
   }
 };
@@ -1130,8 +1129,8 @@ struct ForwardBuilder {
   void add_name(flatbuffers::Offset<flatbuffers::String> name) {
     fbb_.AddOffset(Forward::VT_NAME, name);
   }
-  void add_arguments(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> arguments) {
-    fbb_.AddOffset(Forward::VT_ARGUMENTS, arguments);
+  void add_input(flatbuffers::Offset<Tensor> input) {
+    fbb_.AddOffset(Forward::VT_INPUT, input);
   }
   explicit ForwardBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -1148,9 +1147,9 @@ struct ForwardBuilder {
 inline flatbuffers::Offset<Forward> CreateForward(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::String> name = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> arguments = 0) {
+    flatbuffers::Offset<Tensor> input = 0) {
   ForwardBuilder builder_(_fbb);
-  builder_.add_arguments(arguments);
+  builder_.add_input(input);
   builder_.add_name(name);
   return builder_.Finish();
 }
@@ -1158,27 +1157,25 @@ inline flatbuffers::Offset<Forward> CreateForward(
 inline flatbuffers::Offset<Forward> CreateForwardDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *name = nullptr,
-    const std::vector<flatbuffers::Offset<Tensor>> *arguments = nullptr) {
+    flatbuffers::Offset<Tensor> input = 0) {
   auto name__ = name ? _fbb.CreateString(name) : 0;
-  auto arguments__ = arguments ? _fbb.CreateVector<flatbuffers::Offset<Tensor>>(*arguments) : 0;
   return ppx::CreateForward(
       _fbb,
       name__,
-      arguments__);
+      input);
 }
 
 struct ForwardResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_VALUES = 4
+    VT_OUTPUT = 4
   };
-  const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *values() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *>(VT_VALUES);
+  const Tensor *output() const {
+    return GetPointer<const Tensor *>(VT_OUTPUT);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_VALUES) &&
-           verifier.VerifyVector(values()) &&
-           verifier.VerifyVectorOfTables(values()) &&
+           VerifyOffset(verifier, VT_OUTPUT) &&
+           verifier.VerifyTable(output()) &&
            verifier.EndTable();
   }
 };
@@ -1186,8 +1183,8 @@ struct ForwardResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct ForwardResultBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_values(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> values) {
-    fbb_.AddOffset(ForwardResult::VT_VALUES, values);
+  void add_output(flatbuffers::Offset<Tensor> output) {
+    fbb_.AddOffset(ForwardResult::VT_OUTPUT, output);
   }
   explicit ForwardResultBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -1203,39 +1200,35 @@ struct ForwardResultBuilder {
 
 inline flatbuffers::Offset<ForwardResult> CreateForwardResult(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> values = 0) {
+    flatbuffers::Offset<Tensor> output = 0) {
   ForwardResultBuilder builder_(_fbb);
-  builder_.add_values(values);
+  builder_.add_output(output);
   return builder_.Finish();
-}
-
-inline flatbuffers::Offset<ForwardResult> CreateForwardResultDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<flatbuffers::Offset<Tensor>> *values = nullptr) {
-  auto values__ = values ? _fbb.CreateVector<flatbuffers::Offset<Tensor>>(*values) : 0;
-  return ppx::CreateForwardResult(
-      _fbb,
-      values__);
 }
 
 struct Backward FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_NAME = 4,
-    VT_ARGUMENTS = 6
+    VT_INPUT = 6,
+    VT_GRAD_OUTPUT = 8
   };
   const flatbuffers::String *name() const {
     return GetPointer<const flatbuffers::String *>(VT_NAME);
   }
-  const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *arguments() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *>(VT_ARGUMENTS);
+  const Tensor *input() const {
+    return GetPointer<const Tensor *>(VT_INPUT);
+  }
+  const Tensor *grad_output() const {
+    return GetPointer<const Tensor *>(VT_GRAD_OUTPUT);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_NAME) &&
            verifier.VerifyString(name()) &&
-           VerifyOffset(verifier, VT_ARGUMENTS) &&
-           verifier.VerifyVector(arguments()) &&
-           verifier.VerifyVectorOfTables(arguments()) &&
+           VerifyOffset(verifier, VT_INPUT) &&
+           verifier.VerifyTable(input()) &&
+           VerifyOffset(verifier, VT_GRAD_OUTPUT) &&
+           verifier.VerifyTable(grad_output()) &&
            verifier.EndTable();
   }
 };
@@ -1246,8 +1239,11 @@ struct BackwardBuilder {
   void add_name(flatbuffers::Offset<flatbuffers::String> name) {
     fbb_.AddOffset(Backward::VT_NAME, name);
   }
-  void add_arguments(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> arguments) {
-    fbb_.AddOffset(Backward::VT_ARGUMENTS, arguments);
+  void add_input(flatbuffers::Offset<Tensor> input) {
+    fbb_.AddOffset(Backward::VT_INPUT, input);
+  }
+  void add_grad_output(flatbuffers::Offset<Tensor> grad_output) {
+    fbb_.AddOffset(Backward::VT_GRAD_OUTPUT, grad_output);
   }
   explicit BackwardBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -1264,9 +1260,11 @@ struct BackwardBuilder {
 inline flatbuffers::Offset<Backward> CreateBackward(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::String> name = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> arguments = 0) {
+    flatbuffers::Offset<Tensor> input = 0,
+    flatbuffers::Offset<Tensor> grad_output = 0) {
   BackwardBuilder builder_(_fbb);
-  builder_.add_arguments(arguments);
+  builder_.add_grad_output(grad_output);
+  builder_.add_input(input);
   builder_.add_name(name);
   return builder_.Finish();
 }
@@ -1274,27 +1272,27 @@ inline flatbuffers::Offset<Backward> CreateBackward(
 inline flatbuffers::Offset<Backward> CreateBackwardDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *name = nullptr,
-    const std::vector<flatbuffers::Offset<Tensor>> *arguments = nullptr) {
+    flatbuffers::Offset<Tensor> input = 0,
+    flatbuffers::Offset<Tensor> grad_output = 0) {
   auto name__ = name ? _fbb.CreateString(name) : 0;
-  auto arguments__ = arguments ? _fbb.CreateVector<flatbuffers::Offset<Tensor>>(*arguments) : 0;
   return ppx::CreateBackward(
       _fbb,
       name__,
-      arguments__);
+      input,
+      grad_output);
 }
 
 struct BackwardResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_VALUES = 4
+    VT_GRAD_INPUT = 4
   };
-  const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *values() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Tensor>> *>(VT_VALUES);
+  const Tensor *grad_input() const {
+    return GetPointer<const Tensor *>(VT_GRAD_INPUT);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_VALUES) &&
-           verifier.VerifyVector(values()) &&
-           verifier.VerifyVectorOfTables(values()) &&
+           VerifyOffset(verifier, VT_GRAD_INPUT) &&
+           verifier.VerifyTable(grad_input()) &&
            verifier.EndTable();
   }
 };
@@ -1302,8 +1300,8 @@ struct BackwardResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 struct BackwardResultBuilder {
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_values(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> values) {
-    fbb_.AddOffset(BackwardResult::VT_VALUES, values);
+  void add_grad_input(flatbuffers::Offset<Tensor> grad_input) {
+    fbb_.AddOffset(BackwardResult::VT_GRAD_INPUT, grad_input);
   }
   explicit BackwardResultBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
@@ -1319,19 +1317,10 @@ struct BackwardResultBuilder {
 
 inline flatbuffers::Offset<BackwardResult> CreateBackwardResult(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Tensor>>> values = 0) {
+    flatbuffers::Offset<Tensor> grad_input = 0) {
   BackwardResultBuilder builder_(_fbb);
-  builder_.add_values(values);
+  builder_.add_grad_input(grad_input);
   return builder_.Finish();
-}
-
-inline flatbuffers::Offset<BackwardResult> CreateBackwardResultDirect(
-    flatbuffers::FlatBufferBuilder &_fbb,
-    const std::vector<flatbuffers::Offset<Tensor>> *values = nullptr) {
-  auto values__ = values ? _fbb.CreateVector<flatbuffers::Offset<Tensor>>(*values) : 0;
-  return ppx::CreateBackwardResult(
-      _fbb,
-      values__);
 }
 
 struct Reset FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {

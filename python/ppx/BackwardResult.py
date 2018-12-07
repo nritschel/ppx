@@ -19,26 +19,16 @@ class BackwardResult(object):
         self._tab = flatbuffers.table.Table(buf, pos)
 
     # BackwardResult
-    def Values(self, j):
+    def GradInput(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         if o != 0:
-            x = self._tab.Vector(o)
-            x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
-            x = self._tab.Indirect(x)
+            x = self._tab.Indirect(o + self._tab.Pos)
             from .Tensor import Tensor
             obj = Tensor()
             obj.Init(self._tab.Bytes, x)
             return obj
         return None
 
-    # BackwardResult
-    def ValuesLength(self):
-        o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
-
 def BackwardResultStart(builder): builder.StartObject(1)
-def BackwardResultAddValues(builder, values): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(values), 0)
-def BackwardResultStartValuesVector(builder, numElems): return builder.StartVector(4, numElems, 4)
+def BackwardResultAddGradInput(builder, gradInput): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(gradInput), 0)
 def BackwardResultEnd(builder): return builder.EndObject()

@@ -24,24 +24,20 @@ public struct Forward : IFlatbufferObject
   public ArraySegment<byte>? GetNameBytes() { return __p.__vector_as_arraysegment(4); }
 #endif
   public byte[] GetNameArray() { return __p.__vector_as_array<byte>(4); }
-  public Tensor? Arguments(int j) { int o = __p.__offset(6); return o != 0 ? (Tensor?)(new Tensor()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
-  public int ArgumentsLength { get { int o = __p.__offset(6); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public Tensor? Input { get { int o = __p.__offset(6); return o != 0 ? (Tensor?)(new Tensor()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
 
   public static Offset<Forward> CreateForward(FlatBufferBuilder builder,
       StringOffset nameOffset = default(StringOffset),
-      VectorOffset argumentsOffset = default(VectorOffset)) {
+      Offset<Tensor> inputOffset = default(Offset<Tensor>)) {
     builder.StartObject(2);
-    Forward.AddArguments(builder, argumentsOffset);
+    Forward.AddInput(builder, inputOffset);
     Forward.AddName(builder, nameOffset);
     return Forward.EndForward(builder);
   }
 
   public static void StartForward(FlatBufferBuilder builder) { builder.StartObject(2); }
   public static void AddName(FlatBufferBuilder builder, StringOffset nameOffset) { builder.AddOffset(0, nameOffset.Value, 0); }
-  public static void AddArguments(FlatBufferBuilder builder, VectorOffset argumentsOffset) { builder.AddOffset(1, argumentsOffset.Value, 0); }
-  public static VectorOffset CreateArgumentsVector(FlatBufferBuilder builder, Offset<Tensor>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
-  public static VectorOffset CreateArgumentsVectorBlock(FlatBufferBuilder builder, Offset<Tensor>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
-  public static void StartArgumentsVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
+  public static void AddInput(FlatBufferBuilder builder, Offset<Tensor> inputOffset) { builder.AddOffset(1, inputOffset.Value, 0); }
   public static Offset<Forward> EndForward(FlatBufferBuilder builder) {
     int o = builder.EndObject();
     return new Offset<Forward>(o);
