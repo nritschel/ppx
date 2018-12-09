@@ -30,12 +30,14 @@ pub enum MessageBody {
   ForwardResult = 12,
   Backward = 13,
   BackwardResult = 14,
-  Reset = 15,
+  BatchOperation = 15,
+  BatchOperationResult = 16,
+  Reset = 17,
 
 }
 
 const ENUM_MIN_MESSAGE_BODY: u8 = 0;
-const ENUM_MAX_MESSAGE_BODY: u8 = 15;
+const ENUM_MAX_MESSAGE_BODY: u8 = 17;
 
 impl<'a> flatbuffers::Follow<'a> for MessageBody {
   type Inner = Self;
@@ -69,7 +71,7 @@ impl flatbuffers::Push for MessageBody {
 }
 
 #[allow(non_camel_case_types)]
-const ENUM_VALUES_MESSAGE_BODY:[MessageBody; 16] = [
+const ENUM_VALUES_MESSAGE_BODY:[MessageBody; 18] = [
   MessageBody::NONE,
   MessageBody::Handshake,
   MessageBody::HandshakeResult,
@@ -85,11 +87,13 @@ const ENUM_VALUES_MESSAGE_BODY:[MessageBody; 16] = [
   MessageBody::ForwardResult,
   MessageBody::Backward,
   MessageBody::BackwardResult,
+  MessageBody::BatchOperation,
+  MessageBody::BatchOperationResult,
   MessageBody::Reset
 ];
 
 #[allow(non_camel_case_types)]
-const ENUM_NAMES_MESSAGE_BODY:[&'static str; 16] = [
+const ENUM_NAMES_MESSAGE_BODY:[&'static str; 18] = [
     "NONE",
     "Handshake",
     "HandshakeResult",
@@ -105,6 +109,8 @@ const ENUM_NAMES_MESSAGE_BODY:[&'static str; 16] = [
     "ForwardResult",
     "Backward",
     "BackwardResult",
+    "BatchOperation",
+    "BatchOperationResult",
     "Reset"
 ];
 
@@ -364,6 +370,26 @@ impl<'a> Message<'a> {
   pub fn body_as_backward_result(&'a self) -> Option<BackwardResult> {
     if self.body_type() == MessageBody::BackwardResult {
       self.body().map(|u| BackwardResult::init_from_table(u))
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn body_as_batch_operation(&'a self) -> Option<BatchOperation> {
+    if self.body_type() == MessageBody::BatchOperation {
+      self.body().map(|u| BatchOperation::init_from_table(u))
+    } else {
+      None
+    }
+  }
+
+  #[inline]
+  #[allow(non_snake_case)]
+  pub fn body_as_batch_operation_result(&'a self) -> Option<BatchOperationResult> {
+    if self.body_type() == MessageBody::BatchOperationResult {
+      self.body().map(|u| BatchOperationResult::init_from_table(u))
     } else {
       None
     }
@@ -1790,6 +1816,158 @@ impl<'a: 'b, 'b> BackwardResultBuilder<'a, 'b> {
   }
   #[inline]
   pub fn finish(self) -> flatbuffers::WIPOffset<BackwardResult<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+pub enum BatchOperationOffset {}
+#[derive(Copy, Clone, Debug, PartialEq)]
+
+pub struct BatchOperation<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for BatchOperation<'a> {
+    type Inner = BatchOperation<'a>;
+    #[inline]
+    fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+        Self {
+            _tab: flatbuffers::Table { buf: buf, loc: loc },
+        }
+    }
+}
+
+impl<'a> BatchOperation<'a> {
+    #[inline]
+    pub fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+        BatchOperation {
+            _tab: table,
+        }
+    }
+    #[allow(unused_mut)]
+    pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr>(
+        _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr>,
+        args: &'args BatchOperationArgs<'args>) -> flatbuffers::WIPOffset<BatchOperation<'bldr>> {
+      let mut builder = BatchOperationBuilder::new(_fbb);
+      if let Some(x) = args.operations { builder.add_operations(x); }
+      builder.finish()
+    }
+
+    pub const VT_OPERATIONS: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub fn operations(&self) -> Option<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Message<'a>>>> {
+    self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Message<'a>>>>>(BatchOperation::VT_OPERATIONS, None)
+  }
+}
+
+pub struct BatchOperationArgs<'a> {
+    pub operations: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a , flatbuffers::ForwardsUOffset<Message<'a >>>>>,
+}
+impl<'a> Default for BatchOperationArgs<'a> {
+    #[inline]
+    fn default() -> Self {
+        BatchOperationArgs {
+            operations: None,
+        }
+    }
+}
+pub struct BatchOperationBuilder<'a: 'b, 'b> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b> BatchOperationBuilder<'a, 'b> {
+  #[inline]
+  pub fn add_operations(&mut self, operations: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Message<'b >>>>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(BatchOperation::VT_OPERATIONS, operations);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a>) -> BatchOperationBuilder<'a, 'b> {
+    let start = _fbb.start_table();
+    BatchOperationBuilder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<BatchOperation<'a>> {
+    let o = self.fbb_.end_table(self.start_);
+    flatbuffers::WIPOffset::new(o.value())
+  }
+}
+
+pub enum BatchOperationResultOffset {}
+#[derive(Copy, Clone, Debug, PartialEq)]
+
+pub struct BatchOperationResult<'a> {
+  pub _tab: flatbuffers::Table<'a>,
+}
+
+impl<'a> flatbuffers::Follow<'a> for BatchOperationResult<'a> {
+    type Inner = BatchOperationResult<'a>;
+    #[inline]
+    fn follow(buf: &'a [u8], loc: usize) -> Self::Inner {
+        Self {
+            _tab: flatbuffers::Table { buf: buf, loc: loc },
+        }
+    }
+}
+
+impl<'a> BatchOperationResult<'a> {
+    #[inline]
+    pub fn init_from_table(table: flatbuffers::Table<'a>) -> Self {
+        BatchOperationResult {
+            _tab: table,
+        }
+    }
+    #[allow(unused_mut)]
+    pub fn create<'bldr: 'args, 'args: 'mut_bldr, 'mut_bldr>(
+        _fbb: &'mut_bldr mut flatbuffers::FlatBufferBuilder<'bldr>,
+        args: &'args BatchOperationResultArgs<'args>) -> flatbuffers::WIPOffset<BatchOperationResult<'bldr>> {
+      let mut builder = BatchOperationResultBuilder::new(_fbb);
+      if let Some(x) = args.results { builder.add_results(x); }
+      builder.finish()
+    }
+
+    pub const VT_RESULTS: flatbuffers::VOffsetT = 4;
+
+  #[inline]
+  pub fn results(&self) -> Option<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Message<'a>>>> {
+    self._tab.get::<flatbuffers::ForwardsUOffset<flatbuffers::Vector<flatbuffers::ForwardsUOffset<Message<'a>>>>>(BatchOperationResult::VT_RESULTS, None)
+  }
+}
+
+pub struct BatchOperationResultArgs<'a> {
+    pub results: Option<flatbuffers::WIPOffset<flatbuffers::Vector<'a , flatbuffers::ForwardsUOffset<Message<'a >>>>>,
+}
+impl<'a> Default for BatchOperationResultArgs<'a> {
+    #[inline]
+    fn default() -> Self {
+        BatchOperationResultArgs {
+            results: None,
+        }
+    }
+}
+pub struct BatchOperationResultBuilder<'a: 'b, 'b> {
+  fbb_: &'b mut flatbuffers::FlatBufferBuilder<'a>,
+  start_: flatbuffers::WIPOffset<flatbuffers::TableUnfinishedWIPOffset>,
+}
+impl<'a: 'b, 'b> BatchOperationResultBuilder<'a, 'b> {
+  #[inline]
+  pub fn add_results(&mut self, results: flatbuffers::WIPOffset<flatbuffers::Vector<'b , flatbuffers::ForwardsUOffset<Message<'b >>>>) {
+    self.fbb_.push_slot_always::<flatbuffers::WIPOffset<_>>(BatchOperationResult::VT_RESULTS, results);
+  }
+  #[inline]
+  pub fn new(_fbb: &'b mut flatbuffers::FlatBufferBuilder<'a>) -> BatchOperationResultBuilder<'a, 'b> {
+    let start = _fbb.start_table();
+    BatchOperationResultBuilder {
+      fbb_: _fbb,
+      start_: start,
+    }
+  }
+  #[inline]
+  pub fn finish(self) -> flatbuffers::WIPOffset<BatchOperationResult<'a>> {
     let o = self.fbb_.end_table(self.start_);
     flatbuffers::WIPOffset::new(o.value())
   }

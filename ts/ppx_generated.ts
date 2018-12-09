@@ -21,7 +21,9 @@ export enum MessageBody{
   ForwardResult= 12,
   Backward= 13,
   BackwardResult= 14,
-  Reset= 15
+  BatchOperation= 15,
+  BatchOperationResult= 16,
+  Reset= 17
 }};
 
 /**
@@ -1480,6 +1482,202 @@ static createBackwardResult(builder:flatbuffers.Builder, gradInputOffset:flatbuf
   BackwardResult.startBackwardResult(builder);
   BackwardResult.addGradInput(builder, gradInputOffset);
   return BackwardResult.endBackwardResult(builder);
+}
+}
+}
+/**
+ * @constructor
+ */
+export namespace ppx{
+export class BatchOperation {
+  bb: flatbuffers.ByteBuffer|null = null;
+
+  bb_pos:number = 0;
+/**
+ * @param number i
+ * @param flatbuffers.ByteBuffer bb
+ * @returns BatchOperation
+ */
+__init(i:number, bb:flatbuffers.ByteBuffer):BatchOperation {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param flatbuffers.ByteBuffer bb
+ * @param BatchOperation= obj
+ * @returns BatchOperation
+ */
+static getRootAsBatchOperation(bb:flatbuffers.ByteBuffer, obj?:BatchOperation):BatchOperation {
+  return (obj || new BatchOperation).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @param number index
+ * @param ppx.Message= obj
+ * @returns ppx.Message
+ */
+operations(index: number, obj?:ppx.Message):ppx.Message|null {
+  var offset = this.bb!.__offset(this.bb_pos, 4);
+  return offset ? (obj || new ppx.Message).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
+};
+
+/**
+ * @returns number
+ */
+operationsLength():number {
+  var offset = this.bb!.__offset(this.bb_pos, 4);
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ */
+static startBatchOperation(builder:flatbuffers.Builder) {
+  builder.startObject(1);
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ * @param flatbuffers.Offset operationsOffset
+ */
+static addOperations(builder:flatbuffers.Builder, operationsOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(0, operationsOffset, 0);
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ * @param Array.<flatbuffers.Offset> data
+ * @returns flatbuffers.Offset
+ */
+static createOperationsVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[]):flatbuffers.Offset {
+  builder.startVector(4, data.length, 4);
+  for (var i = data.length - 1; i >= 0; i--) {
+    builder.addOffset(data[i]);
+  }
+  return builder.endVector();
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ * @param number numElems
+ */
+static startOperationsVector(builder:flatbuffers.Builder, numElems:number) {
+  builder.startVector(4, numElems, 4);
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ * @returns flatbuffers.Offset
+ */
+static endBatchOperation(builder:flatbuffers.Builder):flatbuffers.Offset {
+  var offset = builder.endObject();
+  return offset;
+};
+
+static createBatchOperation(builder:flatbuffers.Builder, operationsOffset:flatbuffers.Offset):flatbuffers.Offset {
+  BatchOperation.startBatchOperation(builder);
+  BatchOperation.addOperations(builder, operationsOffset);
+  return BatchOperation.endBatchOperation(builder);
+}
+}
+}
+/**
+ * @constructor
+ */
+export namespace ppx{
+export class BatchOperationResult {
+  bb: flatbuffers.ByteBuffer|null = null;
+
+  bb_pos:number = 0;
+/**
+ * @param number i
+ * @param flatbuffers.ByteBuffer bb
+ * @returns BatchOperationResult
+ */
+__init(i:number, bb:flatbuffers.ByteBuffer):BatchOperationResult {
+  this.bb_pos = i;
+  this.bb = bb;
+  return this;
+};
+
+/**
+ * @param flatbuffers.ByteBuffer bb
+ * @param BatchOperationResult= obj
+ * @returns BatchOperationResult
+ */
+static getRootAsBatchOperationResult(bb:flatbuffers.ByteBuffer, obj?:BatchOperationResult):BatchOperationResult {
+  return (obj || new BatchOperationResult).__init(bb.readInt32(bb.position()) + bb.position(), bb);
+};
+
+/**
+ * @param number index
+ * @param ppx.Message= obj
+ * @returns ppx.Message
+ */
+results(index: number, obj?:ppx.Message):ppx.Message|null {
+  var offset = this.bb!.__offset(this.bb_pos, 4);
+  return offset ? (obj || new ppx.Message).__init(this.bb!.__indirect(this.bb!.__vector(this.bb_pos + offset) + index * 4), this.bb!) : null;
+};
+
+/**
+ * @returns number
+ */
+resultsLength():number {
+  var offset = this.bb!.__offset(this.bb_pos, 4);
+  return offset ? this.bb!.__vector_len(this.bb_pos + offset) : 0;
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ */
+static startBatchOperationResult(builder:flatbuffers.Builder) {
+  builder.startObject(1);
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ * @param flatbuffers.Offset resultsOffset
+ */
+static addResults(builder:flatbuffers.Builder, resultsOffset:flatbuffers.Offset) {
+  builder.addFieldOffset(0, resultsOffset, 0);
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ * @param Array.<flatbuffers.Offset> data
+ * @returns flatbuffers.Offset
+ */
+static createResultsVector(builder:flatbuffers.Builder, data:flatbuffers.Offset[]):flatbuffers.Offset {
+  builder.startVector(4, data.length, 4);
+  for (var i = data.length - 1; i >= 0; i--) {
+    builder.addOffset(data[i]);
+  }
+  return builder.endVector();
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ * @param number numElems
+ */
+static startResultsVector(builder:flatbuffers.Builder, numElems:number) {
+  builder.startVector(4, numElems, 4);
+};
+
+/**
+ * @param flatbuffers.Builder builder
+ * @returns flatbuffers.Offset
+ */
+static endBatchOperationResult(builder:flatbuffers.Builder):flatbuffers.Offset {
+  var offset = builder.endObject();
+  return offset;
+};
+
+static createBatchOperationResult(builder:flatbuffers.Builder, resultsOffset:flatbuffers.Offset):flatbuffers.Offset {
+  BatchOperationResult.startBatchOperationResult(builder);
+  BatchOperationResult.addResults(builder, resultsOffset);
+  return BatchOperationResult.endBatchOperationResult(builder);
 }
 }
 }

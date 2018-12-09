@@ -21,6 +21,8 @@ union MessageBody {
   ForwardResult,
   Backward,
   BackwardResult,
+  BatchOperation,
+  BatchOperationResult,
   Reset
 }
 
@@ -101,6 +103,14 @@ table Backward {
 
 table BackwardResult {
   grad_input: Tensor;
+}
+
+table BatchOperation {
+  operations: [Message];
+}
+
+table BatchOperationResult {
+  results: [Message];
 }
 
 table Reset {}

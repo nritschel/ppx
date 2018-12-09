@@ -20,7 +20,7 @@ class MessageBodyTypeId {
   }
 
   static const int minValue = 0;
-  static const int maxValue = 15;
+  static const int maxValue = 17;
   static bool containsValue(int value) => values.containsKey(value);
 
   static const MessageBodyTypeId NONE = const MessageBodyTypeId._(0);
@@ -38,8 +38,10 @@ class MessageBodyTypeId {
   static const MessageBodyTypeId ForwardResult = const MessageBodyTypeId._(12);
   static const MessageBodyTypeId Backward = const MessageBodyTypeId._(13);
   static const MessageBodyTypeId BackwardResult = const MessageBodyTypeId._(14);
-  static const MessageBodyTypeId Reset = const MessageBodyTypeId._(15);
-  static get values => {0: NONE,1: Handshake,2: HandshakeResult,3: Run,4: RunResult,5: Sample,6: SampleResult,7: Observe,8: ObserveResult,9: Tag,10: TagResult,11: Forward,12: ForwardResult,13: Backward,14: BackwardResult,15: Reset,};
+  static const MessageBodyTypeId BatchOperation = const MessageBodyTypeId._(15);
+  static const MessageBodyTypeId BatchOperationResult = const MessageBodyTypeId._(16);
+  static const MessageBodyTypeId Reset = const MessageBodyTypeId._(17);
+  static get values => {0: NONE,1: Handshake,2: HandshakeResult,3: Run,4: RunResult,5: Sample,6: SampleResult,7: Observe,8: ObserveResult,9: Tag,10: TagResult,11: Forward,12: ForwardResult,13: Backward,14: BackwardResult,15: BatchOperation,16: BatchOperationResult,17: Reset,};
 
   static const fb.Reader<MessageBodyTypeId> reader = const _MessageBodyTypeIdReader();
 
@@ -131,7 +133,9 @@ class Message {
       case 12: return ForwardResult.reader.vTableGet(_bc, _bcOffset, 6, null);
       case 13: return Backward.reader.vTableGet(_bc, _bcOffset, 6, null);
       case 14: return BackwardResult.reader.vTableGet(_bc, _bcOffset, 6, null);
-      case 15: return Reset.reader.vTableGet(_bc, _bcOffset, 6, null);
+      case 15: return BatchOperation.reader.vTableGet(_bc, _bcOffset, 6, null);
+      case 16: return BatchOperationResult.reader.vTableGet(_bc, _bcOffset, 6, null);
+      case 17: return Reset.reader.vTableGet(_bc, _bcOffset, 6, null);
       default: return null;
     }
   }
@@ -1492,6 +1496,168 @@ class BackwardResultObjectBuilder extends fb.ObjectBuilder {
     fbBuilder.startTable();
     if (gradInputOffset != null) {
       fbBuilder.addOffset(0, gradInputOffset);
+    }
+    return fbBuilder.endTable();
+  }
+
+  /// Convenience method to serialize to byte list.
+  @override
+  Uint8List toBytes([String fileIdentifier]) {
+    fb.Builder fbBuilder = new fb.Builder();
+    int offset = finish(fbBuilder);
+    return fbBuilder.finish(offset, fileIdentifier);
+  }
+}
+class BatchOperation {
+  BatchOperation._(this._bc, this._bcOffset);
+  factory BatchOperation(List<int> bytes) {
+    fb.BufferContext rootRef = new fb.BufferContext.fromBytes(bytes);
+    return reader.read(rootRef, 0);
+  }
+
+  static const fb.Reader<BatchOperation> reader = const _BatchOperationReader();
+
+  final fb.BufferContext _bc;
+  final int _bcOffset;
+
+  List<Message> get operations => const fb.ListReader<Message>(Message.reader).vTableGet(_bc, _bcOffset, 4, null);
+
+  @override
+  String toString() {
+    return 'BatchOperation{operations: $operations}';
+  }
+}
+
+class _BatchOperationReader extends fb.TableReader<BatchOperation> {
+  const _BatchOperationReader();
+
+  @override
+  BatchOperation createObject(fb.BufferContext bc, int offset) => 
+    new BatchOperation._(bc, offset);
+}
+
+class BatchOperationBuilder {
+  BatchOperationBuilder(this.fbBuilder) {
+    assert(fbBuilder != null);
+  }
+
+  final fb.Builder fbBuilder;
+
+  void begin() {
+    fbBuilder.startTable();
+  }
+
+  int addOperationsOffset(int offset) {
+    fbBuilder.addOffset(0, offset);
+    return fbBuilder.offset;
+  }
+
+  int finish() {
+    return fbBuilder.endTable();
+  }
+}
+
+class BatchOperationObjectBuilder extends fb.ObjectBuilder {
+  final List<MessageObjectBuilder> _operations;
+
+  BatchOperationObjectBuilder({
+    List<MessageObjectBuilder> operations,
+  })
+      : _operations = operations;
+
+  /// Finish building, and store into the [fbBuilder].
+  @override
+  int finish(
+    fb.Builder fbBuilder) {
+    assert(fbBuilder != null);
+    final int operationsOffset = _operations?.isNotEmpty == true
+        ? fbBuilder.writeList(_operations.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
+        : null;
+
+    fbBuilder.startTable();
+    if (operationsOffset != null) {
+      fbBuilder.addOffset(0, operationsOffset);
+    }
+    return fbBuilder.endTable();
+  }
+
+  /// Convenience method to serialize to byte list.
+  @override
+  Uint8List toBytes([String fileIdentifier]) {
+    fb.Builder fbBuilder = new fb.Builder();
+    int offset = finish(fbBuilder);
+    return fbBuilder.finish(offset, fileIdentifier);
+  }
+}
+class BatchOperationResult {
+  BatchOperationResult._(this._bc, this._bcOffset);
+  factory BatchOperationResult(List<int> bytes) {
+    fb.BufferContext rootRef = new fb.BufferContext.fromBytes(bytes);
+    return reader.read(rootRef, 0);
+  }
+
+  static const fb.Reader<BatchOperationResult> reader = const _BatchOperationResultReader();
+
+  final fb.BufferContext _bc;
+  final int _bcOffset;
+
+  List<Message> get results => const fb.ListReader<Message>(Message.reader).vTableGet(_bc, _bcOffset, 4, null);
+
+  @override
+  String toString() {
+    return 'BatchOperationResult{results: $results}';
+  }
+}
+
+class _BatchOperationResultReader extends fb.TableReader<BatchOperationResult> {
+  const _BatchOperationResultReader();
+
+  @override
+  BatchOperationResult createObject(fb.BufferContext bc, int offset) => 
+    new BatchOperationResult._(bc, offset);
+}
+
+class BatchOperationResultBuilder {
+  BatchOperationResultBuilder(this.fbBuilder) {
+    assert(fbBuilder != null);
+  }
+
+  final fb.Builder fbBuilder;
+
+  void begin() {
+    fbBuilder.startTable();
+  }
+
+  int addResultsOffset(int offset) {
+    fbBuilder.addOffset(0, offset);
+    return fbBuilder.offset;
+  }
+
+  int finish() {
+    return fbBuilder.endTable();
+  }
+}
+
+class BatchOperationResultObjectBuilder extends fb.ObjectBuilder {
+  final List<MessageObjectBuilder> _results;
+
+  BatchOperationResultObjectBuilder({
+    List<MessageObjectBuilder> results,
+  })
+      : _results = results;
+
+  /// Finish building, and store into the [fbBuilder].
+  @override
+  int finish(
+    fb.Builder fbBuilder) {
+    assert(fbBuilder != null);
+    final int resultsOffset = _results?.isNotEmpty == true
+        ? fbBuilder.writeList(_results.map((b) => b.getOrCreateOffset(fbBuilder)).toList())
+        : null;
+
+    fbBuilder.startTable();
+    if (resultsOffset != null) {
+      fbBuilder.addOffset(0, resultsOffset);
     }
     return fbBuilder.endTable();
   }

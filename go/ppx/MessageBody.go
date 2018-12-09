@@ -19,7 +19,9 @@ const (
 	MessageBodyForwardResult MessageBody = 12
 	MessageBodyBackward MessageBody = 13
 	MessageBodyBackwardResult MessageBody = 14
-	MessageBodyReset MessageBody = 15
+	MessageBodyBatchOperation MessageBody = 15
+	MessageBodyBatchOperationResult MessageBody = 16
+	MessageBodyReset MessageBody = 17
 )
 
 var EnumNamesMessageBody = map[MessageBody]string{
@@ -38,6 +40,8 @@ var EnumNamesMessageBody = map[MessageBody]string{
 	MessageBodyForwardResult:"ForwardResult",
 	MessageBodyBackward:"Backward",
 	MessageBodyBackwardResult:"BackwardResult",
+	MessageBodyBatchOperation:"BatchOperation",
+	MessageBodyBatchOperationResult:"BatchOperationResult",
 	MessageBodyReset:"Reset",
 }
 

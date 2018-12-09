@@ -20,7 +20,9 @@ enum +
     MessageBody_ForwardResult = 12,
     MessageBody_Backward = 13,
     MessageBody_BackwardResult = 14,
-    MessageBody_Reset = 15
+    MessageBody_BatchOperation = 15,
+    MessageBody_BatchOperationResult = 16,
+    MessageBody_Reset = 17
 
 enum + 
     Distribution_NONE = 0,
@@ -60,6 +62,10 @@ struct ForwardResult
 struct Backward
 
 struct BackwardResult
+
+struct BatchOperation
+
+struct BatchOperationResult
 
 struct Reset
 
@@ -102,6 +108,10 @@ struct Message : flatbuffers_handle
         ppx_Backward { buf_, buf_.flatbuffers_field_table(pos_, 6) }
     def body_as_BackwardResult():
         ppx_BackwardResult { buf_, buf_.flatbuffers_field_table(pos_, 6) }
+    def body_as_BatchOperation():
+        ppx_BatchOperation { buf_, buf_.flatbuffers_field_table(pos_, 6) }
+    def body_as_BatchOperationResult():
+        ppx_BatchOperationResult { buf_, buf_.flatbuffers_field_table(pos_, 6) }
     def body_as_Reset():
         ppx_Reset { buf_, buf_.flatbuffers_field_table(pos_, 6) }
 
@@ -398,6 +408,48 @@ def BackwardResultStart(b_:flatbuffers_builder):
 def BackwardResultAddGradInput(b_:flatbuffers_builder, grad_input:int):
     b_.PrependUOffsetTRelativeSlot(0, grad_input, 0)
 def BackwardResultEnd(b_:flatbuffers_builder):
+    b_.EndObject()
+
+struct BatchOperation : flatbuffers_handle
+    def operations(i:int):
+        ppx_Message { buf_, buf_.flatbuffers_indirect(buf_.flatbuffers_field_vector(pos_, 4) + i * 4) }
+    def operations_length():
+        buf_.flatbuffers_field_vector_len(pos_, 4)
+
+def GetRootAsBatchOperation(buf:string): BatchOperation { buf, buf.flatbuffers_indirect(0) }
+
+def BatchOperationStart(b_:flatbuffers_builder):
+    b_.StartObject(1)
+def BatchOperationAddOperations(b_:flatbuffers_builder, operations:int):
+    b_.PrependUOffsetTRelativeSlot(0, operations, 0)
+def BatchOperationStartOperationsVector(b_:flatbuffers_builder, n_:int):
+    b_.StartVector(4, n_, 4)
+def BatchOperationCreateOperationsVector(b_:flatbuffers_builder, v_:[int]):
+    b_.StartVector(4, v_.length, 4)
+    reverse(v_) e_: b_.PrependUOffsetTRelative(e_)
+    b_.EndVector(v_.length)
+def BatchOperationEnd(b_:flatbuffers_builder):
+    b_.EndObject()
+
+struct BatchOperationResult : flatbuffers_handle
+    def results(i:int):
+        ppx_Message { buf_, buf_.flatbuffers_indirect(buf_.flatbuffers_field_vector(pos_, 4) + i * 4) }
+    def results_length():
+        buf_.flatbuffers_field_vector_len(pos_, 4)
+
+def GetRootAsBatchOperationResult(buf:string): BatchOperationResult { buf, buf.flatbuffers_indirect(0) }
+
+def BatchOperationResultStart(b_:flatbuffers_builder):
+    b_.StartObject(1)
+def BatchOperationResultAddResults(b_:flatbuffers_builder, results:int):
+    b_.PrependUOffsetTRelativeSlot(0, results, 0)
+def BatchOperationResultStartResultsVector(b_:flatbuffers_builder, n_:int):
+    b_.StartVector(4, n_, 4)
+def BatchOperationResultCreateResultsVector(b_:flatbuffers_builder, v_:[int]):
+    b_.StartVector(4, v_.length, 4)
+    reverse(v_) e_: b_.PrependUOffsetTRelative(e_)
+    b_.EndVector(v_.length)
+def BatchOperationResultEnd(b_:flatbuffers_builder):
     b_.EndObject()
 
 struct Reset : flatbuffers_handle

@@ -40,6 +40,10 @@ struct Backward;
 
 struct BackwardResult;
 
+struct BatchOperation;
+
+struct BatchOperationResult;
+
 struct Reset;
 
 struct Normal;
@@ -66,12 +70,14 @@ enum MessageBody {
   MessageBody_ForwardResult = 12,
   MessageBody_Backward = 13,
   MessageBody_BackwardResult = 14,
-  MessageBody_Reset = 15,
+  MessageBody_BatchOperation = 15,
+  MessageBody_BatchOperationResult = 16,
+  MessageBody_Reset = 17,
   MessageBody_MIN = MessageBody_NONE,
   MessageBody_MAX = MessageBody_Reset
 };
 
-inline const MessageBody (&EnumValuesMessageBody())[16] {
+inline const MessageBody (&EnumValuesMessageBody())[18] {
   static const MessageBody values[] = {
     MessageBody_NONE,
     MessageBody_Handshake,
@@ -88,6 +94,8 @@ inline const MessageBody (&EnumValuesMessageBody())[16] {
     MessageBody_ForwardResult,
     MessageBody_Backward,
     MessageBody_BackwardResult,
+    MessageBody_BatchOperation,
+    MessageBody_BatchOperationResult,
     MessageBody_Reset
   };
   return values;
@@ -110,6 +118,8 @@ inline const char * const *EnumNamesMessageBody() {
     "ForwardResult",
     "Backward",
     "BackwardResult",
+    "BatchOperation",
+    "BatchOperationResult",
     "Reset",
     nullptr
   };
@@ -180,6 +190,14 @@ template<> struct MessageBodyTraits<Backward> {
 
 template<> struct MessageBodyTraits<BackwardResult> {
   static const MessageBody enum_value = MessageBody_BackwardResult;
+};
+
+template<> struct MessageBodyTraits<BatchOperation> {
+  static const MessageBody enum_value = MessageBody_BatchOperation;
+};
+
+template<> struct MessageBodyTraits<BatchOperationResult> {
+  static const MessageBody enum_value = MessageBody_BatchOperationResult;
 };
 
 template<> struct MessageBodyTraits<Reset> {
@@ -305,6 +323,12 @@ struct Message FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const BackwardResult *body_as_BackwardResult() const {
     return body_type() == MessageBody_BackwardResult ? static_cast<const BackwardResult *>(body()) : nullptr;
   }
+  const BatchOperation *body_as_BatchOperation() const {
+    return body_type() == MessageBody_BatchOperation ? static_cast<const BatchOperation *>(body()) : nullptr;
+  }
+  const BatchOperationResult *body_as_BatchOperationResult() const {
+    return body_type() == MessageBody_BatchOperationResult ? static_cast<const BatchOperationResult *>(body()) : nullptr;
+  }
   const Reset *body_as_Reset() const {
     return body_type() == MessageBody_Reset ? static_cast<const Reset *>(body()) : nullptr;
   }
@@ -371,6 +395,14 @@ template<> inline const Backward *Message::body_as<Backward>() const {
 
 template<> inline const BackwardResult *Message::body_as<BackwardResult>() const {
   return body_as_BackwardResult();
+}
+
+template<> inline const BatchOperation *Message::body_as<BatchOperation>() const {
+  return body_as_BatchOperation();
+}
+
+template<> inline const BatchOperationResult *Message::body_as<BatchOperationResult>() const {
+  return body_as_BatchOperationResult();
 }
 
 template<> inline const Reset *Message::body_as<Reset>() const {
@@ -1323,6 +1355,108 @@ inline flatbuffers::Offset<BackwardResult> CreateBackwardResult(
   return builder_.Finish();
 }
 
+struct BatchOperation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_OPERATIONS = 4
+  };
+  const flatbuffers::Vector<flatbuffers::Offset<Message>> *operations() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Message>> *>(VT_OPERATIONS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_OPERATIONS) &&
+           verifier.VerifyVector(operations()) &&
+           verifier.VerifyVectorOfTables(operations()) &&
+           verifier.EndTable();
+  }
+};
+
+struct BatchOperationBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_operations(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Message>>> operations) {
+    fbb_.AddOffset(BatchOperation::VT_OPERATIONS, operations);
+  }
+  explicit BatchOperationBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  BatchOperationBuilder &operator=(const BatchOperationBuilder &);
+  flatbuffers::Offset<BatchOperation> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<BatchOperation>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<BatchOperation> CreateBatchOperation(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Message>>> operations = 0) {
+  BatchOperationBuilder builder_(_fbb);
+  builder_.add_operations(operations);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<BatchOperation> CreateBatchOperationDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<Message>> *operations = nullptr) {
+  auto operations__ = operations ? _fbb.CreateVector<flatbuffers::Offset<Message>>(*operations) : 0;
+  return ppx::CreateBatchOperation(
+      _fbb,
+      operations__);
+}
+
+struct BatchOperationResult FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_RESULTS = 4
+  };
+  const flatbuffers::Vector<flatbuffers::Offset<Message>> *results() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<Message>> *>(VT_RESULTS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_RESULTS) &&
+           verifier.VerifyVector(results()) &&
+           verifier.VerifyVectorOfTables(results()) &&
+           verifier.EndTable();
+  }
+};
+
+struct BatchOperationResultBuilder {
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_results(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Message>>> results) {
+    fbb_.AddOffset(BatchOperationResult::VT_RESULTS, results);
+  }
+  explicit BatchOperationResultBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  BatchOperationResultBuilder &operator=(const BatchOperationResultBuilder &);
+  flatbuffers::Offset<BatchOperationResult> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<BatchOperationResult>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<BatchOperationResult> CreateBatchOperationResult(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<Message>>> results = 0) {
+  BatchOperationResultBuilder builder_(_fbb);
+  builder_.add_results(results);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<BatchOperationResult> CreateBatchOperationResultDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<flatbuffers::Offset<Message>> *results = nullptr) {
+  auto results__ = results ? _fbb.CreateVector<flatbuffers::Offset<Message>>(*results) : 0;
+  return ppx::CreateBatchOperationResult(
+      _fbb,
+      results__);
+}
+
 struct Reset FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -1596,6 +1730,14 @@ inline bool VerifyMessageBody(flatbuffers::Verifier &verifier, const void *obj, 
     }
     case MessageBody_BackwardResult: {
       auto ptr = reinterpret_cast<const BackwardResult *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case MessageBody_BatchOperation: {
+      auto ptr = reinterpret_cast<const BatchOperation *>(obj);
+      return verifier.VerifyTable(ptr);
+    }
+    case MessageBody_BatchOperationResult: {
+      auto ptr = reinterpret_cast<const BatchOperationResult *>(obj);
       return verifier.VerifyTable(ptr);
     }
     case MessageBody_Reset: {

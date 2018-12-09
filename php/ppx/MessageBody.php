@@ -20,7 +20,9 @@ class MessageBody
     const ForwardResult = 12;
     const Backward = 13;
     const BackwardResult = 14;
-    const Reset = 15;
+    const BatchOperation = 15;
+    const BatchOperationResult = 16;
+    const Reset = 17;
 
     private static $names = array(
         "NONE",
@@ -38,6 +40,8 @@ class MessageBody
         "ForwardResult",
         "Backward",
         "BackwardResult",
+        "BatchOperation",
+        "BatchOperationResult",
         "Reset",
     );
 
